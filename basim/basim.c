@@ -41,9 +41,67 @@ void  getNonce4Basim( int which , Nonce_t  value )
 int main ( int argc , char * argv[] )
 {
 
-    
-    
-    // Your code from pa-04_PartOne
+    int       fd_A2B , fd_B2A   ;
+    FILE     *log ;
+
+    char *developerName = "Code by Dormady & Parcell" ;
+
+    fprintf( stdout , "Starting Basim's     %s\n" , developerName ) ;
+
+    if( argc < 3 )
+    {
+        printf("\nMissing command-line file descriptors: %s <getFr. Amal> "
+               "<sendTo Amal>\n\n", argv[0]) ;
+        exit(-1) ;
+    }
+
+    fd_A2B    = atoi(argv[1]) ;  // Read from Amal   File Descriptor
+    fd_B2A    = atoi(argv[2]) ;  // Send to   Amal   File Descriptor
+
+    log = fopen("basim/logBasim.txt" , "w" );
+    if( ! log )
+    {
+        fprintf( stderr , "Basim's %s. Could not create log file\n" , developerName ) ;
+        exit(-1) ;
+    }
+
+    BANNER( log ) ;
+    fprintf( log , "Starting Basim\n"  ) ;
+    BANNER( log ) ;
+
+    fprintf( log , "\n<readFrom Amal> FD=%d , <sendTo Amal> FD=%d\n\n" , fd_A2B , fd_B2A );
+
+    // Get Basim's master keys with the KDC
+    myKey_t   Kb ;    // Basim's master key with the KDC    
+
+    if(getKeyFromFile("basim/basimKey.bin", &Kb) == 0){
+        fprintf( log, "\nCould not get Basim's Master Key & IV.\n");
+        fprintf( stderr, "\nCould not get Basim's Master Key & IV.\n");
+        exit( -1 );
+    } 
+    fprintf( log , "Basim has this Master Kb { key , IV }\n");
+    BIO_dump_indent_fp(log, &(Kb.key), SYMMETRIC_KEY_LEN, 4);
+    fprintf( log , "\n" );
+    BIO_dump_indent_fp(log, &(Kb.iv), INITVECTOR_LEN, 4);
+    fprintf(log, "\n");
+    // Use  getKeyFromFile( "basim/basimKey.bin" , .... ) )
+	// On failure, print "\nCould not get Basim's Masker key & IV.\n" to both  stderr and the Log file
+	// and exit(-1)
+	// On success, print "Basim has this Master Kb { key , IV }\n" to the Log file
+	// BIO_dump the Key IV indented 4 spaces to the righ
+    // fprintf( log , "\n" );
+	// BIO_dump the IV indented 4 spaces to the righ
+
+    // Get Basim's pre-created Nonces: Nb
+	Nonce_t   Nb;  
+    getNonce4Basim (1, Nb);
+	// Use getNonce4Basim () to get Basim's 1st and only nonce into Nb
+    fprintf( log , "Basim will use this Nonce:  Nb\n"  ) ;
+	// BIO_dump Nb indented 4 spaces to the righ
+    BIO_dump_indent_fp( log , &Nb ,  NONCELEN, 4) ;
+    fprintf( log , "\n" );
+
+    fflush( log ) ;
     
     
     
