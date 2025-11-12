@@ -648,13 +648,21 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     //---------------------------------------------------------------------------------------
     // Construct TktPlain = { Ks  || L(IDa)  || IDa }
     // in the global scratch buffer plaintext[]
+    size_t LenA    = strlen(IDa) + 1; 
+    size_t LenTktPlain = KEYSIZE + LENSIZE + LenA;
 
+    int *TktPlain = calloc(1,LenTktPlain);
+    memcpy(TktPlain, Ks->key, SYMMETRIC_KEY_LEN);
+    memcpy(TktPlain, LenA, LENSIZE);
+    memcpy(TktPlain, IDa, KEYSIZE);
+    LenMsg2 += LenTktPlain;
 
     // Use that global array as a scratch buffer for building the plaintext of the ticket
     // Compute its encrypted version in the global scratch buffer ciphertext[]
 
     // Now, set TktCipher = encrypt( Kb , plaintext );
     // Store the result in the global scratch buffer ciphertext[]
+
 
     //---------------------------------------------------------------------------------------
     // Construct the rest of Message 2 then encrypt it using Ka
