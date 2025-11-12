@@ -4,8 +4,8 @@ pa-04_PartTwo:  Intro to Enhanced Needham-Schroeder Key-Exchange with TWO-way Au
 FILE:   kdc.c    SKELETON
 
 Written By: 
-     1- YOU  MUST   WRITE 
-	 2- FULL NAMES  HERE   (or risk losing points )
+     1- Seve Dormady 
+	 2- Shea Parcell
 Submitted on: 
 ----------------------------------------------------------------------------*/
 
@@ -125,6 +125,18 @@ int main ( int argc , char * argv[] )
     BANNER( log ) ;
     fprintf( log , "         MSG2 New\n");
     BANNER( log ) ;
+
+    myKey_t   Ks ;    // Basim's master key with the KDC    
+
+    if(getKeyFromFile("kdc/sessionKey.bin", &Ks) == 0){
+        fprintf( log, "\nCould not get Basim's Master Key & IV.\n");
+        fprintf( stderr, "\nCould not get Basim's Master Key & IV.\n");
+        exit( -1 );
+    } 
+
+    uint8_t  *msg2 ;
+
+    MSG2_new (log, &msg2, &Ka, &Kb, &Ks, IDa, IDb, Na);
 
 
     //*************************************   

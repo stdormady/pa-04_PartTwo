@@ -12,6 +12,7 @@ Submitted on:
 ----------------------------------------------------------------------------*/
 
 #include "myCrypto.h"
+#include "math.h"
 
 //***********************************************************************
 // pLAB-01
@@ -654,7 +655,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     int *TktPlain = calloc(1,LenTktPlain);
     memcpy(TktPlain, Ks->key, SYMMETRIC_KEY_LEN);
     memcpy(TktPlain, LenA, LENSIZE);
-    memcpy(TktPlain, IDa, KEYSIZE);
+    memcpy(TktPlain, IDa, LenA);
     LenMsg2 += LenTktPlain;
 
     // Use that global array as a scratch buffer for building the plaintext of the ticket
@@ -881,4 +882,7 @@ void     fNonce( Nonce_t r , Nonce_t n )
 {
     // Note that the nonces are store in Big-Endian byte order
     // This affects how you do arithmetice on the noces, e.g. when you add 1
+    int base = (n + 1);
+    int mod = pow(2, NONCELEN);
+    r = base % mod;
 }
