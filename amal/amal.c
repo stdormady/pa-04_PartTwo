@@ -154,6 +154,10 @@ int main ( int argc , char * argv[] )
     fprintf( log , "         MSG2 Receive\n");
     BANNER( log ) ;
 
+    myKey_t Ks;
+
+    // MSG2_receive ( log, fd_K2A, &Ka, &Ks, &IDb, Na,);
+
     //*************************************
     // Construct & Send    Message 3
     //*************************************

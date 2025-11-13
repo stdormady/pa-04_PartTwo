@@ -652,11 +652,13 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     size_t LenA    = strlen(IDa) + 1; 
     size_t LenTktPlain = KEYSIZE + LENSIZE + LenA;
 
-    int *TktPlain = calloc(1,LenTktPlain);
-    memcpy(TktPlain, Ks->key, SYMMETRIC_KEY_LEN);
-    memcpy(TktPlain, LenA, LENSIZE);
-    memcpy(TktPlain, IDa, LenA);
+    // is this ok, or should we memcpy into the plaintext buffer, then encrypt?
+    // int *TktPlain = calloc(1,LenTktPlain);
+    memcpy(plaintext, Ks->key, SYMMETRIC_KEY_LEN);
+    memcpy(plaintext, LenA, LENSIZE);
+    memcpy(plaintext, IDa, LenA);
     LenMsg2 += LenTktPlain;
+    size_t ticketLen = encrypt(plaintext, LenTktPlain, Kb->key, Kb->iv, ciphertext);
 
     // Use that global array as a scratch buffer for building the plaintext of the ticket
     // Compute its encrypted version in the global scratch buffer ciphertext[]
@@ -668,9 +670,13 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     //---------------------------------------------------------------------------------------
     // Construct the rest of Message 2 then encrypt it using Ka
     // MSG2 plain = {  Ks || L(IDb) || IDb  ||  Na || L(TktCipher) || TktCipher }
+    
 
     // Fill in Msg2 Plaintext:  Ks || L(IDb) || IDb  || L(Na) || Na || lenTktCipher) || TktCipher
     // Reuse that global array plaintext[] as a scratch buffer for building the plaintext of the MSG2
+    size_t LenB    = strlen(IDb) + 1; 
+    size_t LenMsgPlain = KEYSIZE + LENSIZE + LenB + NONCELEN +;
+    memcpy(plaintext, Ks->key, SYMMETRIC_KEY_LEN);
 
     // Now, encrypt Message 2 using Ka. 
     // Use the global scratch buffer ciphertext2[] to collect the results
@@ -680,15 +686,15 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     // Copy the encrypted ciphertext to Caller's msg2 buffer.
 
     fprintf( log , "The following Encrypted MSG2 ( %lu bytes ) has been"
-                   " created by MSG2_new():  \n" ,  ...  ) ;
-    BIO_dump_indent_fp( log , ... ,  ...  , 4 ) ;    fprintf( log , "\n" ) ;    
+                   " created by MSG2_new():  \n" ,  LenMsg2  ) ;
+    BIO_dump_indent_fp( log , msg2 ,  LenMsg2  , 4 ) ;    fprintf( log , "\n" ) ;    
 
     fprintf( log ,"This is the content of MSG2 ( %lu Bytes ) before Encryption:\n" ,  ... );  
     fprintf( log ,"    Ks { key + IV } (%lu Bytes) is:\n" , KEYSIZE );
-    BIO_dump_indent_fp ( log ,  ...  ,  ...  , 4 ) ;  fprintf( log , "\n") ; 
+    BIO_dump_indent_fp ( log ,  Ks  ,  KEYSIZE  , 4 ) ;  fprintf( log , "\n") ; 
 
     fprintf( log ,"    IDb (%lu Bytes) is:\n" , LenB);
-    BIO_dump_indent_fp ( log ,  ...  ,  ...  , 4 ) ;  fprintf( log , "\n") ; 
+    BIO_dump_indent_fp ( log ,  IDb  ,  LenB  , 4 ) ;  fprintf( log , "\n") ; 
 
     fprintf( log ,"    Na (%lu Bytes) is:\n" , NONCELEN);
     BIO_dump_indent_fp ( log ,  ...  ,  ...  , 4 ) ;  fprintf( log , "\n") ; 
@@ -752,16 +758,16 @@ void MSG3_receive( FILE *log , int fd , const myKey_t *Kb , myKey_t *Ks , char *
 
 
 
-    fprintf( log ,"The following Encrypted TktCipher ( %lu bytes ) was received by MSG3_receive()\n" 
-                 , ....  );
-    BIO_dump_indent_fp( log , ciphertext , lenTktCipher , 4 ) ;   fprintf( log , "\n");
-    fflush( log ) ;
+    // fprintf( log ,"The following Encrypted TktCipher ( %lu bytes ) was received by MSG3_receive()\n" 
+    //              , ....  );
+    // BIO_dump_indent_fp( log , ciphertext , lenTktCipher , 4 ) ;   fprintf( log , "\n");
+    // fflush( log ) ;
 
 
 
-    fprintf( log ,"Here is the Decrypted Ticket ( %lu bytes ) in MSG3_receive():\n" , lenTktPlain ) ;
-    BIO_dump_indent_fp( log , decryptext , ..... , 4 ) ;   fprintf( log , "\n");
-    fflush( log ) ;
+    // fprintf( log ,"Here is the Decrypted Ticket ( %lu bytes ) in MSG3_receive():\n" , lenTktPlain ) ;
+    // BIO_dump_indent_fp( log , decryptext , ..... , 4 ) ;   fprintf( log , "\n");
+    // fflush( log ) ;
 
 
 
@@ -788,16 +794,16 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
     // Use the global scratch buffer ciphertext[] to collect the result. Make sure it fits.
 
     // Now allocate a buffer for the caller, and copy the encrypted MSG4 to it
-    *msg4 = malloc( .... ) ;
+    // *msg4 = malloc( .... ) ;
 
 
 
     
-    fprintf( log , "The following Encrypted MSG4 ( %lu bytes ) has been"
-                   " created by MSG4_new ():  \n" , LenMsg4 ) ;
-    BIO_dump_indent_fp( log , *msg4 , ... ) ;
+    // fprintf( log , "The following Encrypted MSG4 ( %lu bytes ) has been"
+    //                " created by MSG4_new ():  \n" , LenMsg4 ) ;
+    // BIO_dump_indent_fp( log , *msg4 , ... ) ;
 
-    return LenMsg4 ;
+    // return LenMsg4 ;
     
 
 }
@@ -832,7 +838,8 @@ size_t  MSG5_new( FILE *log , uint8_t **msg5, const myKey_t *Ks ,  Nonce_t *fNb 
 
 
     // Now allocate a buffer for the caller, and copy the encrypted MSG5 to it
-    *msg5 = malloc( ... ) ;
+    
+    // *msg5 = malloc( ... ) ;
 
 
     fprintf( log , "The following Encrypted MSG5 ( %lu bytes ) has been"
