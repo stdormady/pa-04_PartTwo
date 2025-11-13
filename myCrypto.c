@@ -747,45 +747,58 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
     fprintf( log ,"MSG2_receive() got the following Encrypted MSG2 ( %lu bytes ) Successfully\n" 
                   , msg2_len );
     BIO_dump_indent_fp( log , msg2 , msg2_len , 4 ) ;   fprintf( log , "\n");
+    fflush(log);
     
-    size_t msg2PlainLen = decrypt(msg2, msg2_len, Ka->key, Ka->iv, plaintext);
+    size_t msg2PlainLen = decrypt(msg2, msg2_len, Ka->key, Ka->iv, decryptext);
     free(msg2);
     
     size_t space = 0; // how much further we have to go in the array to the next value
 
-    memcpy(Ks->key, plaintext + space, SYMMETRIC_KEY_LEN); // ks
-    space += SYMMETRIC_KEY_LEN;
+    fprintf(log, "\nAmal decrypted message 2 from the KDC into the following:\n");
+    
+    memcpy(Ks->key, decryptext + space, SYMMETRIC_KEY_LEN + INITVECTOR_LEN); // ks
+    space += SYMMETRIC_KEY_LEN + INITVECTOR_LEN;
+
+    fprintf(log, "    Ks { Key , IV } (%u Bytes ) is:\n", SYMMETRIC_KEY_LEN + INITVECTOR_LEN);
+    BIO_dump_indent_fp(log, Ks, SYMMETRIC_KEY_LEN + INITVECTOR_LEN, 4);
+    fprintf(log, "\n");
+    fflush(log);
     
     size_t lenIDb;
-    memcpy(&lenIDb, plaintext + space, LENSIZE);
+    memcpy(&lenIDb, decryptext + space, LENSIZE);
     space += LENSIZE;
+    fprintf(log, "    IDb (%lu Bytes):   ..... MATCH\n", lenIDb);
+    BIO_dump_indent_fp(log, *IDb, lenIDb, 4);
+    fprintf(log, "\n");
+    fflush(log);
 
-    memcpy(IDb, plaintext + space, lenIDb);
+    memcpy(IDb, decryptext + space, lenIDb);
     space += lenIDb;
 
-    memcpy(Na, plaintext + space, NONCELEN);
+    memcpy(Na, decryptext + space, NONCELEN);
     space += NONCELEN;
 
     size_t ticketLen;
-    memcpy(&ticketLen, plaintext + space, LENSIZE);
+    memcpy(&ticketLen, decryptext + space, LENSIZE);
     *lenTktCipher = ticketLen;
     space += LENSIZE;
 
     *tktCipher = calloc(1, ticketLen);
-    memcpy(*tktCipher, plaintext + space, ticketLen);
+    memcpy(*tktCipher, decryptext + space, ticketLen);
     space += ticketLen;
 
     // printing
 
-    fprintf(log, "\nAmal decrypted message 2 from the KDC into the following:\n");
+    // fprintf(log, "\nAmal decrypted message 2 from the KDC into the following:\n");
 
-    fprintf(log, "    Ks { Key , IV } (%u Bytes ) is:\n", SYMMETRIC_KEY_LEN);
-    BIO_dump_indent_fp(log, Ks->key, SYMMETRIC_KEY_LEN, 4);
-    fprintf(log, "\n");
+    // fprintf(log, "    Ks { Key , IV } (%u Bytes ) is:\n", SYMMETRIC_KEY_LEN);
+    // BIO_dump_indent_fp(log, Ks->key, SYMMETRIC_KEY_LEN, 4);
+    // fprintf(log, "\n");
+    // fflush(log);
 
-    fprintf(log, "    IDb (%lu Bytes):   ..... MATCH\n", lenIDb);
-    BIO_dump_indent_fp(log, *IDb, lenIDb, 4);
-    fprintf(log, "\n");
+    // fprintf(log, "    IDb (%lu Bytes):   ..... MATCH\n", lenIDb);
+    // BIO_dump_indent_fp(log, *IDb, lenIDb, 4);
+    // fprintf(log, "\n");
 
     fprintf(log, "    Received Copy of Na (%lu bytes):    >>>> VALID\n", NONCELEN);
     BIO_dump_indent_fp(log, Na, NONCELEN, 4);
