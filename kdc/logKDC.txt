@@ -74,3 +74,6 @@ This is the content of MSG2 ( 164 Bytes ) before Encryption:
     0030 - 9d f9 b2 72 cc dc 3c 14-38 9b 63 16 08 22 26 3e   ...r..<.8.c.."&>
     0040 - 7e 1b 2f f3 55 b5 a7 54-26 35 a1 2a 02 06 1b de   ~./.U..T&5.*....
 
+The KDC sent the Encrypted MSG2 ( 176 bytes ) to Amal Successfully
+
+The KDC has terminated normally. Goodbye

@@ -725,7 +725,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
 void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **IDb , 
                        Nonce_t *Na , size_t *lenTktCipher , uint8_t **tktCipher )
 {
-size_t msg2_len;
+    size_t msg2_len;
     if (read(fd, &msg2_len, sizeof(size_t)) != sizeof(size_t)) { // get length of MSG2
         fprintf(log, "Failed to read MSG2 length\n");
         return;
@@ -771,7 +771,62 @@ size_t msg2_len;
     *lenTktCipher = ticketLen;
     space += LENSIZE;
 
+    size_t msg2_len;
+    if (read(fd, &msg2_len, sizeof(size_t)) != sizeof(size_t)) { // get length of MSG2
+        fprintf(log, "Failed to read MSG2 length\n");
+        return;
+    }
 
+    uint8_t *msg2 = calloc(1, msg2_len); // allocate buffer for MSG2
+
+    if (!msg2) {
+        fprintf(log, "Memory allocation failed for MSG2 buffer\n");
+        return;
+    }
+
+    if (read(fd, msg2, msg2_len) != msg2_len) { // read msg2 from fd into msg2 buffer
+        fprintf(log, "Failed to read complete MSG2 data\n");
+        free(msg2);
+        return;
+    }
+
+    fprintf( log ,"MSG2_receive() got the following Encrypted MSG2 ( %lu bytes ) Successfully\n" 
+                  , msg2_len );
+    BIO_dump_indent_fp( log , msg2 , msg2_len , 4 ) ;   fprintf( log , "\n");
+    
+    size_t msg2PlainLen = decrypt(msg2, msg2_len, Ka->key, Ka->iv, plaintext);
+    free(msg2);
+    
+    size_t space = 0; // how much further we have to go in the array to the next value
+
+    memcpy(Ks->key, plaintext + space, SYMMETRIC_KEY_LEN); // ks
+    space += SYMMETRIC_KEY_LEN;
+    
+    size_t lenIDb;
+    memcpy(&lenIDb, plaintext + space, LENSIZE);
+    space += LENSIZE;
+
+    memcpy(IDb, plaintext + space, lenIDb);
+    space += lenIDb;
+
+    memcpy(Na, plaintext + space, NONCELEN);
+    space += NONCELEN;
+
+    size_t ticketLen;
+    memcpy(&ticketLen, plaintext + space, LENSIZE);
+    *lenTktCipher = ticketLen;
+    space += LENSIZE;
+
+    *tktCipher = calloc(1, ticketLen);
+    memcpy(*tktCipher, plaintext + space, ticketLen);
+    space += ticketLen;
+
+<<<<<<< HEAD
+    // printing
+
+    fprintf(log, "\nAmal decrypted message 2 from the KDC into the following:\n");
+
+=======
     *tktCipher = calloc(1, ticketLen);
     memcpy(*tktCipher, plaintext + space, ticketLen);
     space += ticketLen;
@@ -780,6 +835,7 @@ size_t msg2_len;
 
     fprintf(log, "\nAmal decrypted message 2 from the KDC into the following:\n");
 
+>>>>>>> refs/remotes/origin/main
     fprintf(log, "    Ks { Key , IV } (%lu Bytes ) is:\n", SYMMETRIC_KEY_LEN);
     BIO_dump_indent_fp(log, Ks->key, SYMMETRIC_KEY_LEN, 4);
     fprintf(log, "\n");
