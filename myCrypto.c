@@ -675,7 +675,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     // Fill in Msg2 Plaintext:  Ks || L(IDb) || IDb  || L(Na) || Na || lenTktCipher) || TktCipher
     // Reuse that global array plaintext[] as a scratch buffer for building the plaintext of the MSG2
     size_t LenB    = strlen(IDb) + 1; 
-    size_t LenMsgPlain = KEYSIZE + LENSIZE + LenB + NONCELEN +;
+    size_t LenMsgPlain = KEYSIZE + LENSIZE + LenB + NONCELEN + Na;
     memcpy(plaintext, Ks->key, SYMMETRIC_KEY_LEN);
 
     // Now, encrypt Message 2 using Ka. 
@@ -683,24 +683,25 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
 
     // allocate memory on behalf of the caller for a copy of MSG2 ciphertext
 
+
     // Copy the encrypted ciphertext to Caller's msg2 buffer.
 
     fprintf( log , "The following Encrypted MSG2 ( %lu bytes ) has been"
                    " created by MSG2_new():  \n" ,  LenMsg2  ) ;
     BIO_dump_indent_fp( log , msg2 ,  LenMsg2  , 4 ) ;    fprintf( log , "\n" ) ;    
 
-    fprintf( log ,"This is the content of MSG2 ( %lu Bytes ) before Encryption:\n" ,  ... );  
+    fprintf( log ,"This is the content of MSG2 ( %lu Bytes ) before Encryption:\n" ,  LenMsgPlain );  
     fprintf( log ,"    Ks { key + IV } (%lu Bytes) is:\n" , KEYSIZE );
     BIO_dump_indent_fp ( log ,  Ks  ,  KEYSIZE  , 4 ) ;  fprintf( log , "\n") ; 
 
     fprintf( log ,"    IDb (%lu Bytes) is:\n" , LenB);
     BIO_dump_indent_fp ( log ,  IDb  ,  LenB  , 4 ) ;  fprintf( log , "\n") ; 
 
-    fprintf( log ,"    Na (%lu Bytes) is:\n" , NONCELEN);
-    BIO_dump_indent_fp ( log ,  ...  ,  ...  , 4 ) ;  fprintf( log , "\n") ; 
+    // fprintf( log ,"    Na (%lu Bytes) is:\n" , NONCELEN);
+    // BIO_dump_indent_fp ( log ,  ...  ,  ...  , 4 ) ;  fprintf( log , "\n") ; 
 
-    fprintf( log ,"    Encrypted Ticket (%lu Bytes) is\n" ,  ... );
-    BIO_dump_indent_fp ( log ,  ...  ,  ...  , 4 ) ;  fprintf( log , "\n") ; 
+    fprintf( log ,"    Encrypted Ticket (%lu Bytes) is\n" ,  ticketLen );
+    BIO_dump_indent_fp ( log ,  ciphertext  ,  ticketLen  , 4 ) ;  fprintf( log , "\n") ; 
 
     fflush( log ) ;    
     
@@ -719,8 +720,8 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
 
 
 
-    fprintf( log ,"MSG2_receive() got the following Encrypted MSG2 ( %lu bytes ) Successfully\n" 
-                 , .... );
+    // fprintf( log ,"MSG2_receive() got the following Encrypted MSG2 ( %lu bytes ) Successfully\n" 
+    //              , .... );
 
 
 }
