@@ -155,8 +155,10 @@ int main ( int argc , char * argv[] )
     BANNER( log ) ;
 
     myKey_t Ks;
+    size_t lenTktCipher;
+    uint8_t *tktCipher;
 
-    // MSG2_receive ( log, fd_K2A, &Ka, &Ks, &IDb, Na,);
+    MSG2_receive ( log, fd_K2A, &Ka, &Ks, &IDb, &Na, &lenTktCipher, &tktCipher);
 
     //*************************************
     // Construct & Send    Message 3
