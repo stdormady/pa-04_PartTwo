@@ -46,7 +46,6 @@ MSG2_receive() got the following Encrypted MSG2 ( 176 bytes ) Successfully
     0090 - 49 97 d1 8a a0 ef 75 0d-fc db d8 41 11 af a0 27   I.....u....A...'
     00a0 - 2d 5a 2a be d5 f1 c0 8e-16 24 d5 7e ba 03 c6 eb   -Z*......$.~....
 
-
 Amal decrypted message 2 from the KDC into the following:
     Ks { Key , IV } (48 Bytes ) is:
     0000 - e9 c4 5c 56 03 c9 ad 47-78 b9 97 5c 4a e6 f2 7f   ..\V...Gx..\J...

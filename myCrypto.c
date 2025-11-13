@@ -754,7 +754,7 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
     
     size_t space = 0; // how much further we have to go in the array to the next value
 
-    fprintf(log, "\nAmal decrypted message 2 from the KDC into the following:\n");
+    fprintf(log, "Amal decrypted message 2 from the KDC into the following:\n");
     
     memcpy(Ks->key, decryptext + space, SYMMETRIC_KEY_LEN + INITVECTOR_LEN); // ks
     space += SYMMETRIC_KEY_LEN + INITVECTOR_LEN;
