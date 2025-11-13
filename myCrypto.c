@@ -821,12 +821,6 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
     memcpy(*tktCipher, plaintext + space, ticketLen);
     space += ticketLen;
 
-<<<<<<< HEAD
-    // printing
-
-    fprintf(log, "\nAmal decrypted message 2 from the KDC into the following:\n");
-
-=======
     *tktCipher = calloc(1, ticketLen);
     memcpy(*tktCipher, plaintext + space, ticketLen);
     space += ticketLen;
@@ -835,7 +829,6 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
 
     fprintf(log, "\nAmal decrypted message 2 from the KDC into the following:\n");
 
->>>>>>> refs/remotes/origin/main
     fprintf(log, "    Ks { Key , IV } (%lu Bytes ) is:\n", SYMMETRIC_KEY_LEN);
     BIO_dump_indent_fp(log, Ks->key, SYMMETRIC_KEY_LEN, 4);
     fprintf(log, "\n");
