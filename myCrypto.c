@@ -655,7 +655,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     // is this ok, or should we memcpy into the plaintext buffer, then encrypt?
     // int *TktPlain = calloc(1,LenTktPlain);
     memcpy(plaintext, Ks->key, SYMMETRIC_KEY_LEN);
-    memcpy(plaintext, LenA, LENSIZE);
+    memcpy(plaintext, &LenA, LENSIZE);
     memcpy(plaintext, IDa, LenA);
     LenMsg2 += LenTktPlain;
     size_t ticketLen = encrypt(plaintext, LenTktPlain, Kb->key, Kb->iv, ciphertext);
@@ -678,15 +678,15 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     size_t LenMsgPlain = KEYSIZE + LENSIZE + LenB + NONCELEN + ticketLen;
     LenMsg2 += LenMsgPlain;
     memcpy(plaintext, Ks->key, SYMMETRIC_KEY_LEN);
-    memcpy(plaintext, LenB, LENSIZE);
+    memcpy(plaintext, &LenB, LENSIZE);
     memcpy(plaintext, IDb, LenB);
     memcpy(plaintext, Na, NONCELEN);
-    memcpy(plaintext, ticketLen, LENSIZE);
+    memcpy(plaintext, &ticketLen, LENSIZE);
     memcpy(plaintext, ciphertext, ticketLen);
 
     // Now, encrypt Message 2 using Ka. 
     // Use the global scratch buffer ciphertext2[] to collect the results
-    size_t final = encrypt(plaintext, LenTktPlain, Ka->key, Ka->iv, ciphertext2);
+    size_t final = encrypt(plaintext, LenMsg2, Ka->key, Ka->iv, ciphertext2);
 
     // allocate memory on behalf of the caller for a copy of MSG2 ciphertext
     *msg2 = calloc(1, LenMsg2);
@@ -779,7 +779,7 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
 
     fprintf(log, "\nAmal decrypted message 2 from the KDC into the following:\n");
 
-    fprintf(log, "    Ks { Key , IV } (%lu Bytes ) is:\n", SYMMETRIC_KEY_LEN);
+    fprintf(log, "    Ks { Key , IV } (%u Bytes ) is:\n", SYMMETRIC_KEY_LEN);
     BIO_dump_indent_fp(log, Ks->key, SYMMETRIC_KEY_LEN, 4);
     fprintf(log, "\n");
 
@@ -964,7 +964,7 @@ void     fNonce( Nonce_t r , Nonce_t n )
 {
     // Note that the nonces are store in Big-Endian byte order
     // This affects how you do arithmetice on the noces, e.g. when you add 1
-    int base = (n + 1);
-    int mod = pow(2, NONCELEN);
-    r = base % mod;
+    // int base = (n + 1);
+    // int mod = pow(2, NONCELEN);
+    // r = base % mod;
 }
