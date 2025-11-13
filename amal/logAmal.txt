@@ -29,3 +29,7 @@ Amal sent message 1 ( 49 bytes ) to the KDC with:
     IDb = 'Basim is Smiley'
     Na ( 4 Bytes ) is:
     0000 - 44 33 22 11                                       D3".
+
+***************************************************
+         MSG2 Receive
+***************************************************

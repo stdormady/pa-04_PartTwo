@@ -139,7 +139,7 @@ int main ( int argc , char * argv[] )
                    "IDb = '%s'\n" , LenMsg1 , IDa , IDb ) ;
     fprintf( log , "    Na ( %lu Bytes ) is:\n" , NONCELEN ) ;
     BIO_dump_indent_fp(log, &Na, NONCELEN, 4);
-    // fprintf(log, "\n");
+    fprintf(log, "\n");
     // BIO_dump the nonce Na
     fflush( log ) ;
 
@@ -153,13 +153,14 @@ int main ( int argc , char * argv[] )
     BANNER( log ) ;
     fprintf( log , "         MSG2 Receive\n");
     BANNER( log ) ;
+    fflush(log);
 
     myKey_t Ks;
     size_t lenTktCipher;
     uint8_t *tktCipher;
 
     MSG2_receive ( log, fd_K2A, &Ka, &Ks, &IDb, &Na, &lenTktCipher, &tktCipher );
-
+    fflush(log);
     //*************************************
     // Construct & Send    Message 3
     //*************************************
