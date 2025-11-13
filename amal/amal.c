@@ -158,7 +158,7 @@ int main ( int argc , char * argv[] )
     size_t lenTktCipher;
     uint8_t *tktCipher;
 
-    MSG2_receive ( log, fd_K2A, &Ka, &Ks, &IDb, &Na, &lenTktCipher, &tktCipher);
+    MSG2_receive ( log, fd_K2A, &Ka, &Ks, &IDb, &Na, &lenTktCipher, &tktCipher );
 
     //*************************************
     // Construct & Send    Message 3

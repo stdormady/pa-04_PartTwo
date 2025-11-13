@@ -728,8 +728,8 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
 
 
 
-    // fprintf( log ,"MSG2_receive() got the following Encrypted MSG2 ( %lu bytes ) Successfully\n" 
-    //              , .... );
+    fprintf( log ,"MSG2_receive() got the following Encrypted MSG2 ( %lu bytes ) Successfully\n" 
+                 , .... );
 
 
 }

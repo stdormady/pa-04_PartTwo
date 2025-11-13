@@ -136,7 +136,10 @@ int main ( int argc , char * argv[] )
 
     uint8_t  *msg2 ;
 
-    MSG2_new (log, &msg2, &Ka, &Kb, &Ks, IDa, IDb, Na);
+    size_t msg2Len = MSG2_new (log, &msg2, &Ka, &Kb, &Ks, IDa, IDb, &Na);
+
+    fprintf(log, "\nThe KDC sent the Encrypted MSG2 ( %lu bytes ) to Amal Successfully\n", msg2Len);
+
 
 
     //*************************************   
