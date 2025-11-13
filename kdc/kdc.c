@@ -137,6 +137,10 @@ int main ( int argc , char * argv[] )
     uint8_t  *msg2 ;
 
     size_t msg2Len = MSG2_new (log, &msg2, &Ka, &Kb, &Ks, IDa, IDb, &Na);
+    if(write(fd_K2A, &msg2Len, sizeof(size_t)) == -1){
+        fprintf(log, "KDC: Couldnt write msg2 length to Amal");
+    }
+
     if(write(fd_K2A, msg2, msg2Len) == -1){
         fprintf(log, "KDC: Couldn't write to Amal");
     }
