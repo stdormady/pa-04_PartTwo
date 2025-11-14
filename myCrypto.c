@@ -692,7 +692,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     memcpy(tempPlaintext, plaintext, LenTktPlain);
 
     // meant to 0 out...
-    memcpy (plaintext, ciphertext, PLAINTEXT_LEN_MAX);
+    // memcpy (plaintext, ciphertext, PLAINTEXT_LEN_MAX);
     // Fill in Msg2 Plaintext:  Ks || L(IDb) || IDb  || L(Na) || Na || lenTktCipher) || TktCipher
     // Reuse that global array plaintext[] as a scratch buffer for building the plaintext of the MSG2
     size_t LenB    = strlen(IDb) + 1; 
@@ -736,11 +736,11 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     // Plaintext Ticket (69 Bytes) iss
 
     fprintf( log , "Plaintext Ticket (%lu Bytes) is\n" ,  LenTktPlain  ) ;
-    BIO_dump_indent_fp( log , plaintext ,  LenTktPlain  , 4 ) ;    fprintf( log , "\n" ) ;
+    BIO_dump_indent_fp( log , tempPlaintext ,  LenTktPlain  , 4 ) ;    fprintf( log , "\n" ) ;
     fflush(log);
     fprintf( log , "The following Encrypted MSG2 ( %lu bytes ) has been"
                    " created by MSG2_new():  \n" ,  LenMsg2  ) ;
-    BIO_dump_indent_fp( log , msg2 ,  LenMsg2  , 4 ) ;    fprintf( log , "\n" ) ;    
+    BIO_dump_indent_fp( log , ciphertext2 ,  LenMsg2  , 4 ) ;    fprintf( log , "\n" ) ;    
 
     fprintf( log ,"This is the content of MSG2 ( %lu Bytes ) before Encryption:\n" ,  LenMsgPlain );  
     fprintf( log ,"    Ks { key + IV } (%lu Bytes) is:\n" , KEYSIZE );
@@ -753,7 +753,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     BIO_dump_indent_fp ( log ,  Na  ,  NONCELEN  , 4 ) ;  fprintf( log , "\n") ; 
 
     fprintf( log ,"    Encrypted Ticket (%lu Bytes) is\n" ,  ticketLen );
-    BIO_dump_indent_fp ( log ,  ciphertext  ,  ticketLen  , 4 ) ;  fprintf( log , "\n") ; 
+    BIO_dump_indent_fp ( log ,  ciphertext  ,  ticketLen  , 4 ) ;  //fprintf( log , "\n") ; 
 
     fflush( log ) ;    
     
