@@ -169,6 +169,21 @@ int main ( int argc , char * argv[] )
     fprintf( log , "         MSG3 New\n");
     BANNER( log ) ;
 
+    size_t  LenMsg3 ;
+    uint8_t  *msg3 ;
+
+    fprintf( log , "Amal is sending this to Basim in Message 3:\n    Na2 ( %lu Bytes ) is:\n" , NONCELEN ) ;
+    BIO_dump_indent_fp(log, &Na2, NONCELEN, 4);
+    fprintf(log, "\n");
+
+    LenMsg3 = MSG3_new( log , &msg3 , lenTktCipher , tktCipher , &Na2 ) ;
+    // fprintf(log, "%u", LenMsg1);
+    
+    // Send MSG1 to KDC via the appropriate pipe
+    write(fd_A2B, msg3, LenMsg3);
+
+    fprintf(log, "Amal Sent the Message 3 ( %lu bytes ) to Basim\n", LenMsg3);
+
     //*************************************
     // Receive   & Process Message 4
     //*************************************

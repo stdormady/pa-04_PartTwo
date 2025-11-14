@@ -114,6 +114,7 @@ int main ( int argc , char * argv[] )
 
     fprintf( log , "    Na ( %lu Bytes ) is:\n" , NONCELEN ) ;
     BIO_dump_indent_fp(log, &Na, NONCELEN, 4);
+    fprintf(log, "\n");
     fflush( log ) ;
     
     
@@ -126,18 +127,24 @@ int main ( int argc , char * argv[] )
     fprintf( log , "         MSG2 New\n");
     BANNER( log ) ;
 
-    myKey_t   Ks ;    // Basim's master key with the KDC    
+    myKey_t   Ks ;    // Session master key with the KDC    
 
     if(getKeyFromFile("kdc/sessionKey.bin", &Ks) == 0){
-        fprintf( log, "\nCould not get Basim's Master Key & IV.\n");
-        fprintf( stderr, "\nCould not get Basim's Master Key & IV.\n");
+        fprintf( log, "\nCould not get Session Master Key & IV.\n");
+        fprintf( stderr, "\nCould not get Session Master Key & IV.\n");
         exit( -1 );
-    } 
+    }
+
+    fprintf( log , "KDC: created this session key Ks { Key , IV } (%lu Bytes ) is:\n", KEYSIZE);
+    BIO_dump_indent_fp(log, Ks.key, KEYSIZE, 4);
+    fprintf( log , "\n" );
+    fflush (log);
 
     uint8_t  *msg2 ;
 
     size_t msg2Len = MSG2_new (log, &msg2, &Ka, &Kb, &Ks, IDa, IDb, &Na);
-    if(write(fd_K2A, &msg2Len, sizeof(size_t)) == -1){
+
+    if(write(fd_K2A, &msg2Len, LENSIZE) == -1){
         fprintf(log, "KDC: Couldnt write msg2 length to Amal");
     }
 
