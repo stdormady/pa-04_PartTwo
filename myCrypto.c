@@ -645,23 +645,23 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
 {
 
     size_t LenMsg2  = 0 ;
-    
+    int space = 0;
+
     //---------------------------------------------------------------------------------------
     // Construct TktPlain = { Ks  || L(IDa)  || IDa }
     // in the global scratch buffer plaintext[]
     size_t LenA    = strlen(IDa) + 1; 
     size_t LenTktPlain = KEYSIZE + LENSIZE + LenA; // This is good
-    fprintf (log, "After sizing Len: %u", LenTktPlain);
-    fflush(log);
-    int space = 0;
+    // fprintf (log, "After sizing Len: %u", LenTktPlain);
+    // fflush(log);
 
     // is this ok, or should we memcpy into the plaintext buffer, then encrypt?
     // int *TktPlain = calloc(1,LenTktPlain);
-    memcpy(plaintext, Ks, KEYSIZE);
+    memcpy(plaintext + space, Ks, KEYSIZE);
     space += KEYSIZE;
-    memcpy(plaintext, &LenA, LENSIZE);
+    memcpy(plaintext + space, &LenA, LENSIZE);
     space += LENSIZE;
-    memcpy(plaintext, IDa, LenA);
+    memcpy(plaintext + space, IDa, LenA);
     space += LenA;
 
     char *ticketCipher = calloc (1, LenTktPlain);
@@ -671,8 +671,8 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     size_t ticketLen = encrypt(plaintext, LenTktPlain, Kb->key, Kb->iv, ciphertext);
     // SAYS IN SPEC TO DYNAMICALLY ALLOCATE FOR RECIEVED COPIES, DONE BELOW
     // HERE ABOVE IS GOOD
-    fprintf (log, "\nAfter first encrypt TicketLen: %u\n", ticketLen);
-    fflush(log);
+    // fprintf (log, "\nAfter first encrypt TicketLen: %u\n", ticketLen);
+    // fflush(log);
     // char *ticketCopy = calloc (1, LenTktPlain);
     // // strncpy (ticketCopy, plaintext, LenTktPlain);
     // memcpy (ticketCopy, plaintext, LenTktPlain);
@@ -688,38 +688,51 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     // Construct the rest of Message 2 then encrypt it using Ka
     // MSG2 plain = {  Ks || L(IDb) || IDb  ||  Na || L(TktCipher) || TktCipher }
     
+    char *tempPlaintext = calloc(1, LenTktPlain); // this is to print the correct plaintext ticket.
+    memcpy(tempPlaintext, plaintext, LenTktPlain);
+
     // meant to 0 out...
     memcpy (plaintext, ciphertext, PLAINTEXT_LEN_MAX);
     // Fill in Msg2 Plaintext:  Ks || L(IDb) || IDb  || L(Na) || Na || lenTktCipher) || TktCipher
     // Reuse that global array plaintext[] as a scratch buffer for building the plaintext of the MSG2
     size_t LenB    = strlen(IDb) + 1; 
     size_t LenMsgPlain = KEYSIZE + LENSIZE + LenB + NONCELEN + LENSIZE + ticketLen;
-    fprintf (log, "size of LenMsgPlain: %u\n", LenMsgPlain);
+    //fprintf (log, "size of LenMsgPlain: %u\n", LenMsgPlain);
     LenMsg2 += LenMsgPlain;
-    memcpy(plaintext, Ks, KEYSIZE);
-    memcpy(plaintext, &LenB, LENSIZE);
-    memcpy(plaintext, IDb, LenB);
-    memcpy(plaintext, Na, NONCELEN);
-    memcpy(plaintext, &ticketLen, LENSIZE);
-    memcpy(plaintext, ciphertext, ticketLen);
-    fprintf (log, "After second plaintext setting KEYSIZE: %u\n", KEYSIZE);
-    fflush(log);
+    space = 0;
+    memcpy(plaintext + space, Ks, KEYSIZE);
+    space += KEYSIZE;
+    memcpy(plaintext + space, &LenB, LENSIZE);
+    space += LENSIZE;
+    memcpy(plaintext + space, IDb, LenB);
+    space += LenB;
+    memcpy(plaintext + space, Na, NONCELEN);
+    space += NONCELEN;
+    memcpy(plaintext + space, &ticketLen, LENSIZE);
+    space += LENSIZE;
+    memcpy(plaintext + space, ciphertext, ticketLen);
+    space += ticketLen;
+    // fprintf (log, "After second plaintext setting KEYSIZE: %u\n", KEYSIZE);
+    // fprintf (log, "offset of plaintext: %u\n", space);
+    // fflush(log);
 
     // Now, encrypt Message 2 using Ka. 
     // Use the global scratch buffer ciphertext2[] to collect the results
     size_t final = encrypt(plaintext, LenMsgPlain, Ka->key, Ka->iv, ciphertext2);
     // errors here
-    LenMsg2 += LENSIZE; // length of message outside encryption
-    fprintf (log, "After second encrypt LenMsg2: %u\n", LenMsg2);
-    fflush(log);
+    LenMsg2 = final;
+    //LenMsg2 += LENSIZE; // length of message outside encryption
+    // fprintf (log, "After second encrypt LenMsg2: %u\n", LenMsg2);
+    // fflush(log);
     // allocate memory on behalf of the caller for a copy of MSG2 ciphertext
     
-    *msg2 = calloc(1, LenMsg2);
+    *msg2 = calloc(1, LenMsg2 + LENSIZE);
 
     // Copy the encrypted ciphertext to Caller's msg2 buffer.
-    memcpy (*msg2, ciphertext2, LenMsg2);
-    fprintf (log, "Copy cipher\n");
-    fflush(log);
+    memcpy(*msg2, &LenMsg2, LENSIZE);
+    memcpy (*msg2 + LENSIZE, ciphertext2, LenMsg2);
+    // fprintf (log, "Copy cipher\n");
+    // fflush(log);
     // Plaintext Ticket (69 Bytes) iss
 
     fprintf( log , "Plaintext Ticket (%lu Bytes) is\n" ,  LenTktPlain  ) ;

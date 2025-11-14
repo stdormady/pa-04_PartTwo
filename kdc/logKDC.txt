@@ -35,22 +35,16 @@ KDC: created this session key Ks { Key , IV } (48 Bytes ) is:
     0010 - 7d ef 6b 03 55 05 b2 0e-9d 35 90 88 67 e7 85 dd   }.k.U....5..g...
     0020 - 8d ba 5c 47 10 37 c7 50-2f c3 38 eb 57 1c 64 31   ..\G.7.P/.8.W.d1
 
-After sizing Len: 69
-After first encrypt TicketLen: 80
-size of LenMsgPlain: 164
-After second plaintext setting KEYSIZE: 48
-After second encrypt LenMsg2: 241
-Copy cipher
 Plaintext Ticket (69 Bytes) is
-    0000 - 9b 7f 96 d1 c9 1b a5 01-2f 47 7c 24 40 d0 72 23   ......../G|$@.r#
-    0010 - 78 e0 e5 7e 33 6b 27 3d-ca 09 a8 e9 e9 e0 c7 e2   x..~3k'=........
-    0020 - ff af a3 f6 d5 ab 2f b3-8c fa 1c 4f 5c ae 62 40   ....../....O\.b@
-    0030 - 57 d2 38 57 6a 8d 5e dd-15 c1 83 85 d6 ba cd 49   W.8Wj.^........I
-    0040 - 37 7e cf b3 b0                                    7~...
+    0000 - e9 c4 5c 56 03 c9 ad 47-78 b9 97 5c 4a e6 f2 7f   ..\V...Gx..\J...
+    0010 - 7d ef 6b 03 55 05 b2 0e-9d 35 90 88 67 e7 85 dd   }.k.U....5..g...
+    0020 - 8d ba 5c 47 10 37 c7 50-2f c3 38 eb 57 1c 64 31   ..\G.7.P/.8.W.d1
+    0030 - 10 00 00 00 00 00 00 00-42 61 73 69 6d 20 69 73   ........Basim is
+    0040 - 20 53 6d 69 6c                                     Smil
 
-The following Encrypted MSG2 ( 241 bytes ) has been created by MSG2_new():  
-    0000 - 10 37 86 45 71 55 00 00-ff ff ff ff ff ff ff ff   .7.EqU..........
-    0010 - 08 d0 ed 3d 71 55 00 00-b0 36 82 45 71 55 00 00   ...=qU...6.EqU..
+The following Encrypted MSG2 ( 176 bytes ) has been created by MSG2_new():  
+    0000 - 60 67 02 2d fc 5c 00 00-ff ff ff ff ff ff ff ff   `g.-.\..........
+    0010 - 08 90 17 0e fc 5c 00 00-b0 66 fe 2c fc 5c 00 00   .....\...f.,.\..
     0020 - 00 00 5a 01 44 33 22 11-01 27 48 03 a4 b0 eb 2f   ..Z.D3"..'H..../
     0030 - 1c bb 05 18 09 6d 45 d9-aa 5b 77 69 b8 12 0b 5b   .....mE..[wi...[
     0040 - 6b d5 cd 59 f2 4c 7c f7-4c 6d 4f a6 a5 91 37 ed   k..Y.L|.LmO...7.
@@ -60,11 +54,6 @@ The following Encrypted MSG2 ( 241 bytes ) has been created by MSG2_new():
     0080 - 0f 9a d1 9d c6 14 18 ef-e9 c4 5c 56 03 c9 ad 47   ..........\V...G
     0090 - 78 b9 97 5c 4a e6 f2 7f-7d ef 6b 03 55 05 b2 0e   x..\J...}.k.U...
     00a0 - 9d 35 90 88 67 e7 85 dd-8d ba 5c 47 10 37 c7 50   .5..g.....\G.7.P
-    00b0 - 2f c3 38 eb 57 1c 64 31-d0 3b 7c 7d fe 7f 00 00   /.8.W.d1.;|}....
-    00c0 - 00 8d 8c 95 6d 27 1f 3c-90 3b 7c 7d fe 7f 00 00   ....m'.<.;|}....
-    00d0 - ca a1 a2 6b 3b 7a 00 00-40 3b 7c 7d fe 7f 00 00   ...k;z..@;|}....
-    00e0 - 18 3c 7c 7d fe 7f 00 00-03 00 00 00 03 00 00 00   .<|}............
-    00f0 - 09                                                .
 
 This is the content of MSG2 ( 164 Bytes ) before Encryption:
     Ks { key + IV } (48 Bytes) is:
@@ -79,13 +68,13 @@ This is the content of MSG2 ( 164 Bytes ) before Encryption:
     0000 - 44 33 22 11                                       D3".
 
     Encrypted Ticket (80 Bytes) is
-    0000 - 9b 7f 96 d1 c9 1b a5 01-2f 47 7c 24 40 d0 72 23   ......../G|$@.r#
-    0010 - 78 e0 e5 7e 33 6b 27 3d-ca 09 a8 e9 e9 e0 c7 e2   x..~3k'=........
-    0020 - ff af a3 f6 d5 ab 2f b3-8c fa 1c 4f 5c ae 62 40   ....../....O\.b@
-    0030 - 57 d2 38 57 6a 8d 5e dd-15 c1 83 85 d6 ba cd 49   W.8Wj.^........I
-    0040 - 37 7e cf b3 b0 b3 67 30-06 6f 85 4d 7d 94 32 3b   7~....g0.o.M}.2;
+    0000 - 67 84 0d 12 2f 1d 1f 72-f1 6f ea 63 70 00 5e 8a   g.../..r.o.cp.^.
+    0010 - 92 33 4b 7b c2 26 c2 0d-c0 9f f2 53 82 af 20 67   .3K{.&.....S.. g
+    0020 - 8b ca 4c 1d 4e 56 20 57-e9 45 cc 3c 43 f7 fd c4   ..L.NV W.E.<C...
+    0030 - 9d f9 b2 72 cc dc 3c 14-38 9b 63 16 08 22 26 3e   ...r..<.8.c.."&>
+    0040 - 7e 1b 2f f3 55 b5 a7 54-26 35 a1 2a 02 06 1b de   ~./.U..T&5.*....
 
 
-The KDC sent the Encrypted MSG2 ( 241 bytes ) to Amal Successfully
+The KDC sent the Encrypted MSG2 ( 176 bytes ) to Amal Successfully
 
 The KDC has terminated normally. Goodbye
