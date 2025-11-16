@@ -1009,7 +1009,7 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
 
     // Now allocate a buffer for the caller, and copy the encrypted MSG4 to it
     *msg4 = malloc( LenMsg4 ) ;
-    memcpy (*msg4, ciphertext2, LenMsg4);
+    memcpy (*msg4, ciphertext, LenMsg4);
 
     fprintf( log , "Basim is sending this f( Na2 ) in MSG4:\n") ;
     BIO_dump_indent_fp( log , copy , NONCELEN, 4 ) ; fprintf (log, "\n");
@@ -1141,7 +1141,16 @@ void     fNonce( Nonce_t r , Nonce_t n )
 {
     // Note that the nonces are store in Big-Endian byte order
     // This affects how you do arithmetice on the noces, e.g. when you add 1
-    int base = (n + 1);
-    int mod = pow(2, NONCELEN);
-    r = base % mod;
+    // int base = (n + 1);
+    // int mod = pow(2, NONCELEN);
+    // r = base % mod;
+
+    // memcpy(r, n, NONCELEN);
+
+
+    // for (int i = NONCELEN - 1; i >= 0; i--) {
+    //     r[i]++;
+    //     if (r[i] != 0x00)
+    //         break;
+    // }
 }

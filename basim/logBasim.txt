@@ -48,7 +48,7 @@ Basim is sending this nonce Nb in MSG4:
     0000 - 99 88 77 66                                       ..wf
 
 The following Encrypted MSG4 ( 16 bytes ) has been created by MSG4_new ():  
-    0000 - 00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00   ................
+    0000 - 8e 46 4d 8d 8b 66 6e 2c-84 44 d9 9a e2 9b ec 8e   .FM..fn,.D......
 Basim Sent the above MSG4 to Amal***************************************************
          MSG5 Receive
 ***************************************************
