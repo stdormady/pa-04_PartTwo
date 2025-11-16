@@ -964,22 +964,46 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
 
     // Construct MSG4 Plaintext = { f(Na2)  ||  Nb }
     // Use the global scratch buffer plaintext[] for MSG4 plaintext and fill it in with component values
+    LenMsg4 = LENSIZE + NONCELEN + NONCELEN;
+    size_t space = 0;
+
+    memcpy (plaintext + space, LenMsg4, LENSIZE);
+    space += LENSIZE;
+    Nonce_t copy ;
+    memcpy (&copy, fNa2, NONCELEN);
+
+    fNonce (&copy, fNa2);
+
+    fprintf( stderr , "Basim is sending this f( Na2 ) in MSG4:\n") ;
+    BIO_dump_indent_fp( stderr , copy , NONCELEN, 4 ) ;
+
+    memcpy (plaintext + space, copy, NONCELEN);
+     space += NONCELEN;
+    memcpy (plaintext + space, Nb, NONCELEN);
+    space += NONCELEN;
 
 
     // Now, encrypt MSG4 plaintext using the session key Ks;
     // Use the global scratch buffer ciphertext[] to collect the result. Make sure it fits.
+    size_t encrLen = encrypt (plaintext, LenMsg4, Ks->key, Ks->iv, ciphertext2);
+    LenMsg4 = encrLen;
 
     // Now allocate a buffer for the caller, and copy the encrypted MSG4 to it
-    // *msg4 = malloc( .... ) ;
+    *msg4 = malloc( LenMsg4 ) ;
+    memcpy (*msg4, ciphertext2, LenMsg4);
+
+    fprintf( log , "Basim is sending this f( Na2 ) in MSG4:\n") ;
+    BIO_dump_indent_fp( log , copy , NONCELEN, 4 ) ; fprintf (log, "\n");
+
+    fprintf( log , "Basim is sending this nonce Nb in MSG4:\n") ;
+    BIO_dump_indent_fp( log , Nb , NONCELEN, 4 ) ; fprintf (log, "\n");
 
 
+    fprintf( log , "The following Encrypted MSG4 ( %lu bytes ) has been"
+                   " created by MSG4_new ():  \n" , LenMsg4 ) ;
+    BIO_dump_indent_fp( log , *msg4 , LenMsg4, 4 ) ;
 
-    
-    // fprintf( log , "The following Encrypted MSG4 ( %lu bytes ) has been"
-    //                " created by MSG4_new ():  \n" , LenMsg4 ) ;
-    // BIO_dump_indent_fp( log , *msg4 , ... ) ;
-
-    // return LenMsg4 ;
+    return LenMsg4 ;
     
 
 }
@@ -1065,7 +1089,7 @@ void     fNonce( Nonce_t r , Nonce_t n )
 {
     // Note that the nonces are store in Big-Endian byte order
     // This affects how you do arithmetice on the noces, e.g. when you add 1
-    // int base = (n + 1);
-    // int mod = pow(2, NONCELEN);
-    // r = base % mod;
+    int base = (n + 1);
+    int mod = pow(2, NONCELEN);
+    r = base % mod;
 }

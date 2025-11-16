@@ -126,6 +126,15 @@ int main ( int argc , char * argv[] )
     BANNER( log ) ;
     fprintf( log , "         MSG4 New\n");
     BANNER( log ) ;
+    size_t LenMsg4 ;
+    u_int8_t *msg4 ;
+    Nonce_t fNa2;
+
+    LenMsg4 = MSG4_new (log, &msg4, &Ks, &fNa2, &Nb);
+
+    write (fd_B2A, msg4, LenMsg4);
+
+    fprintf (log, "Basim Sent the above MSG4 to Amal");
 
     //*************************************
     // Receive   & Process Message 5
