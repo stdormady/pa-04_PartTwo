@@ -132,9 +132,10 @@ int main ( int argc , char * argv[] )
 
     LenMsg4 = MSG4_new (log, &msg4, &Ks, &fNa2, &Nb);
 
+    write (fd_B2A, &LenMsg4, LENSIZE);
     write (fd_B2A, msg4, LenMsg4);
 
-    fprintf (log, "Basim Sent the above MSG4 to Amal");
+    fprintf (log, "Basim Sent the above MSG4 to Amal\n\n");
 
     //*************************************
     // Receive   & Process Message 5

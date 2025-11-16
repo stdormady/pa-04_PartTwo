@@ -988,15 +988,15 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
     LenMsg4 = NONCELEN + NONCELEN;
     size_t space = 0;
 
-    Nonce_t copy ;
-    memcpy (&copy, fNa2, NONCELEN);
+    // Nonce_t copy ;
+    // memcpy (&copy, fNa2, NONCELEN);
 
-    fNonce (&copy, fNa2);
+    // fNonce (&copy, fNa2);
 
-    fprintf( stderr , "Basim is sending this f( Na2 ) in MSG4:\n") ;
-    BIO_dump_indent_fp( stderr , copy , NONCELEN, 4 ) ;
+    // fprintf( stderr , "Basim is sending this f( Na2 ) in MSG4:\n") ;
+    // BIO_dump_indent_fp( stderr , fNa2 , NONCELEN, 4 ) ;
 
-    memcpy (plaintext + space, copy, NONCELEN);
+    memcpy (plaintext + space, fNa2, NONCELEN);
     space += NONCELEN;
     memcpy (plaintext + space, Nb, NONCELEN);
     space += NONCELEN;
@@ -1006,13 +1006,14 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
     // Use the global scratch buffer ciphertext[] to collect the result. Make sure it fits.
     size_t encrLen = encrypt (plaintext, LenMsg4, Ks->key, Ks->iv, ciphertext);
     LenMsg4 = encrLen;
+    fprintf (log, "Len msg4: %u", LenMsg4);
 
     // Now allocate a buffer for the caller, and copy the encrypted MSG4 to it
     *msg4 = malloc( LenMsg4 ) ;
     memcpy (*msg4, ciphertext2, LenMsg4);
 
     fprintf( log , "Basim is sending this f( Na2 ) in MSG4:\n") ;
-    BIO_dump_indent_fp( log , copy , NONCELEN, 4 ) ; fprintf (log, "\n");
+    BIO_dump_indent_fp( log , fNa2 , NONCELEN, 4 ) ; fprintf (log, "\n");
 
     fprintf( log , "Basim is sending this nonce Nb in MSG4:\n") ;
     BIO_dump_indent_fp( log , Nb , NONCELEN, 4 ) ; fprintf (log, "\n");

@@ -182,7 +182,7 @@ int main ( int argc , char * argv[] )
 
     
     // Send MSG2 to Basim via the appropriate pipe
-    // write(fd_A2B, LenMsg3, LENSIZE);
+    write(fd_A2B, LenMsg3, LENSIZE);
     write(fd_A2B, msg3, LenMsg3);
 
     fprintf(log, "Amal Sent the Message 3 ( %lu bytes ) to Basim\n\n", LenMsg3);

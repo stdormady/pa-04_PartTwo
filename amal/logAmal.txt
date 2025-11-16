@@ -85,5 +85,6 @@ Amal Sent the Message 3 ( 92 bytes ) to Basim
 ***************************************************
          MSG4 Receive
 ***************************************************
-The following Encrypted MSG4 ( 0 bytes ) was received:
+The following Encrypted MSG4 ( 16 bytes ) was received:
+    0000 - 00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00   ................
 
