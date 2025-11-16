@@ -179,12 +179,14 @@ int main ( int argc , char * argv[] )
     // fflush(log);
 
     LenMsg3 = MSG3_new( log , &msg3 , lenTktCipher , tktCipher , &Na2 ) ;
-    // fprintf(log, "%u", LenMsg1);
+
     
     // Send MSG2 to Basim via the appropriate pipe
+    // write(fd_A2B, LenMsg3, LENSIZE);
     write(fd_A2B, msg3, LenMsg3);
 
-    fprintf(log, "Amal Sent the Message 3 ( %lu bytes ) to Basim\n", LenMsg3);
+    fprintf(log, "Amal Sent the Message 3 ( %lu bytes ) to Basim\n\n", LenMsg3);
+    fflush(log);
 
     //*************************************
     // Receive   & Process Message 4

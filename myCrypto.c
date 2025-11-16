@@ -868,24 +868,34 @@ size_t MSG3_new( FILE *log , uint8_t **msg3 , const size_t lenTktCipher , const 
 {
 
     size_t    LenMsg3 = 0;
+    // fprintf (log, "Amal is sending this to Basim in Message 3:\n");
+    // fflush (log);
 
     LenMsg3 = LENSIZE + lenTktCipher + NONCELEN;
 
     // decrypt (tktCipher, lenTktCipher, );
-    // size_t space = 0;
+    size_t space = 0;
 
     // uint8_t *IdACopy = calloc(1, lenTktCipher);
-    memcpy(*msg3, &lenTktCipher, LENSIZE);
-    // space += LENSIZE;
-    memcpy(*msg3, tktCipher, lenTktCipher);
-    // space += lenTktCipher;
-    memcpy(*msg3, Na2, NONCELEN);
-    // space += NONCELEN;
+    memcpy(plaintext + space, &lenTktCipher, LENSIZE);
+    fflush(log);
+    space += LENSIZE;
+    memcpy(plaintext + space, tktCipher, lenTktCipher);
+    space += lenTktCipher;
+    memcpy(plaintext + space, Na2, NONCELEN);
+    space += NONCELEN;
+    LenMsg3 = space;
+
+    *msg3 = calloc (1, LenMsg3);
+    memcpy (*msg3, plaintext, LenMsg3);
 
 
+    // fprintf( log , "Amal is sending this to Basim in Message 3:\n    Na2 in Message 3:\n" ) ;
+    // BIO_dump_indent_fp(log, &Na2, NONCELEN, 4);
+    // fprintf(log, "\n");
 
-    fprintf( log , "Amal is sending this to Basim in Message 3:\n    Na2 ( %lu Bytes ) is:\n" , NONCELEN ) ;
-    BIO_dump_indent_fp(log, &Na2, NONCELEN, 4);
+    fprintf( log , "Amal is sending this to Basim in Message 3:\n    Na2 in Message 3:\n" ) ;
+    BIO_dump_indent_fp(log, Na2, NONCELEN, 4);
     fprintf(log, "\n");
     fflush(log);
 
