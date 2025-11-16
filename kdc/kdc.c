@@ -146,7 +146,7 @@ int main ( int argc , char * argv[] )
 
     if(write(fd_K2A, &msg2Len, LENSIZE) == -1){
         fprintf(log, "KDC: Couldnt write msg2 length to Amal");
-    }
+    // }
 
     if(write(fd_K2A, msg2, msg2Len) == -1){
         fprintf(log, "KDC: Couldn't write to Amal");

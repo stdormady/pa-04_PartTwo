@@ -729,8 +729,8 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     *msg2 = calloc(1, LenMsg2 + LENSIZE);
 
     // Copy the encrypted ciphertext to Caller's msg2 buffer.
-    memcpy(*msg2, &LenMsg2, LENSIZE);
-    memcpy (*msg2 + LENSIZE, ciphertext2, LenMsg2);
+    //memcpy(*msg2, &LenMsg2, LENSIZE);
+    memcpy (*msg2, ciphertext2, LenMsg2);
     // fprintf (log, "Copy cipher\n");
     // fflush(log);
     // Plaintext Ticket (69 Bytes) iss
@@ -770,7 +770,7 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
                        Nonce_t *Na , size_t *lenTktCipher , uint8_t **tktCipher )
 {
     size_t msg2_len;
-    if (read(fd, &msg2_len, sizeof(size_t)) != sizeof(size_t)) { // get length of MSG2
+    if (read(fd, &msg2_len, LENSIZE) != LENSIZE) { // get length of MSG2
         fprintf(log, "Failed to read MSG2 length\n");
         return;
     }
@@ -909,20 +909,33 @@ size_t MSG3_new( FILE *log , uint8_t **msg3 , const size_t lenTktCipher , const 
 void MSG3_receive( FILE *log , int fd , const myKey_t *Kb , myKey_t *Ks , char **IDa , Nonce_t *Na2 )
 {
 
+    size_t msg3_ticketlen;
+    if (read(fd, &msg3_ticketlen, sizeof(size_t)) != sizeof(size_t)) { // get length of MSG2
+        fprintf(log, "Failed to read MSG3 Ticket length\n");
+        return;
+    }
+
+    if (read(fd, ciphertext, msg3_ticketlen) != msg3_ticketlen) { // read msg2 from fd into msg2 buffer
+        fprintf(log, "Failed to read complete MSG3 data\n");
+        return;
+    }
+
+    fprintf( log ,"The following Encrypted TktCipher ( %lu bytes ) was received by MSG3_receive()\n" 
+                 , msg3_ticketlen  );
+    BIO_dump_indent_fp( log , ciphertext , msg3_ticketlen , 4 ) ;   fprintf( log , "\n");
+    fflush( log ) ;
+
+    size_t decryptedLen = decrypt(ciphertext, msg3_ticketlen, Kb->key, Kb->iv, decryptext);
 
 
-    // fprintf( log ,"The following Encrypted TktCipher ( %lu bytes ) was received by MSG3_receive()\n" 
-    //              , ....  );
-    // BIO_dump_indent_fp( log , ciphertext , lenTktCipher , 4 ) ;   fprintf( log , "\n");
-    // fflush( log ) ;
+    fprintf( log ,"Here is the Decrypted Ticket ( %lu bytes ) in MSG3_receive():\n" , decryptedLen ) ;
+    BIO_dump_indent_fp( log , decryptext , decryptedLen , 4 ) ;   fprintf( log , "\n");
+    fflush( log ) ;
 
-
-
-    // fprintf( log ,"Here is the Decrypted Ticket ( %lu bytes ) in MSG3_receive():\n" , lenTktPlain ) ;
-    // BIO_dump_indent_fp( log , decryptext , ..... , 4 ) ;   fprintf( log , "\n");
-    // fflush( log ) ;
-
-
+    if (read(fd, Na2, NONCELEN) != NONCELEN) { 
+        fprintf(log, "Failed to read MSG3 Nonce\n");
+        return;
+    }
 
 }
 
