@@ -910,7 +910,7 @@ void MSG3_receive( FILE *log , int fd , const myKey_t *Kb , myKey_t *Ks , char *
 {
 
     size_t msg3_ticketlen;
-    if (read(fd, &msg3_ticketlen, sizeof(size_t)) != sizeof(size_t)) { // get length of MSG2
+    if (read(fd, &msg3_ticketlen, LENSIZE) != LENSIZE) { // get length of MSG2
         fprintf(log, "Failed to read MSG3 Ticket length\n");
         return;
     }
@@ -927,6 +927,17 @@ void MSG3_receive( FILE *log , int fd , const myKey_t *Kb , myKey_t *Ks , char *
 
     size_t decryptedLen = decrypt(ciphertext, msg3_ticketlen, Kb->key, Kb->iv, decryptext);
 
+    int space = 0;
+    memcpy(Ks->key, decryptext + space, SYMMETRIC_KEY_LEN + INITVECTOR_LEN); // ks
+    space += SYMMETRIC_KEY_LEN + INITVECTOR_LEN;
+
+    size_t lenIDa;
+    memcpy(&lenIDa, decryptext + space, LENSIZE);
+    space += LENSIZE;
+
+    //IDa = calloc(1, lenIDa);
+    memcpy(IDa, decryptext + space, lenIDa);
+    space += lenIDa;
 
     fprintf( log ,"Here is the Decrypted Ticket ( %lu bytes ) in MSG3_receive():\n" , decryptedLen ) ;
     BIO_dump_indent_fp( log , decryptext , decryptedLen , 4 ) ;   fprintf( log , "\n");
@@ -936,6 +947,16 @@ void MSG3_receive( FILE *log , int fd , const myKey_t *Kb , myKey_t *Ks , char *
         fprintf(log, "Failed to read MSG3 Nonce\n");
         return;
     }
+
+    fprintf(log, "    Ks { Key , IV } (%u Bytes ) is:\n", SYMMETRIC_KEY_LEN + INITVECTOR_LEN);
+    BIO_dump_indent_fp(log, Ks, SYMMETRIC_KEY_LEN + INITVECTOR_LEN, 4);
+    fprintf(log, "\n");
+    fflush(log);
+    
+    fprintf(log, "    Na2 ( %lu Bytes ) is:\n", NONCELEN);
+    BIO_dump_indent_fp(log, Na2, NONCELEN, 4);
+    fprintf(log, "\n");
+    fflush(log);
 
 }
 
