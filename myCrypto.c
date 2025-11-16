@@ -867,16 +867,27 @@ size_t MSG3_new( FILE *log , uint8_t **msg3 , const size_t lenTktCipher , const 
                    const Nonce_t *Na2 )
 {
 
-    size_t    LenMsg3 =0;
+    size_t    LenMsg3 = 0;
 
-    // LenMsg3 = LENSIZE + lenTktCipher + NONCELEN;
+    LenMsg3 = LENSIZE + lenTktCipher + NONCELEN;
 
     // decrypt (tktCipher, lenTktCipher, );
+    // size_t space = 0;
 
     // uint8_t *IdACopy = calloc(1, lenTktCipher);
-    // memcpy(*msg3, &lenTktCipher, LENSIZE);
-    // memcpy(*msg3, tktCipher, lenTktCipher);
-    // memcpy(*msg3, Na2, NONCELEN);
+    memcpy(*msg3, &lenTktCipher, LENSIZE);
+    // space += LENSIZE;
+    memcpy(*msg3, tktCipher, lenTktCipher);
+    // space += lenTktCipher;
+    memcpy(*msg3, Na2, NONCELEN);
+    // space += NONCELEN;
+
+
+
+    fprintf( log , "Amal is sending this to Basim in Message 3:\n    Na2 ( %lu Bytes ) is:\n" , NONCELEN ) ;
+    BIO_dump_indent_fp(log, &Na2, NONCELEN, 4);
+    fprintf(log, "\n");
+    fflush(log);
 
 
     fprintf( log , "The following MSG3 ( %lu bytes ) has been created by "

@@ -1,11 +1,11 @@
 /*----------------------------------------------------------------------------
 pa-04_PartTwo:  Intro to Enhanced Needham-Schroeder Key-Exchange with TWO-way Authentication
 
-FILE:   basim.c     SKELETON
+FILE:   basim.c
 
 Written By: 
-     1- YOU  MUST   WRITE 
-	 2- FULL NAMES  HERE   (or risk losing points )
+     1- Steve Dormady 
+	 2- Shea Parcell
 Submitted on: 
      Insert the date of Submission here
 ----------------------------------------------------------------------------*/
@@ -112,6 +112,12 @@ int main ( int argc , char * argv[] )
     BANNER( log ) ;
     fprintf( log , "         MSG3 Receive\n");
     BANNER( log ) ;
+
+    myKey_t Ks;
+    char *IDa;
+    Nonce_t Na;
+
+    MSG3_receive( log , fd_A2B , &Kb , &Ks, &IDa, &Na) ;
 
     //*************************************
     // Construct & Send    Message 4

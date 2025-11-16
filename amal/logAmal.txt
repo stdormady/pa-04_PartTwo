@@ -65,21 +65,3 @@ Amal decrypted message 2 from the KDC into the following:
     0030 - 9d f9 b2 72 cc dc 3c 14-38 9b 63 16 08 22 26 3e   ...r..<.8.c.."&>
     0040 - 7e 1b 2f f3 55 b5 a7 54-26 35 a1 2a 02 06 1b de   ~./.U..T&5.*....
 
-***************************************************
-         MSG3 New
-***************************************************
-Amal is sending this to Basim in Message 3:
-    Na2 ( 4 Bytes ) is:
-    0000 - dd cc bb aa                                       ....
-
-The following MSG3 ( 0 bytes ) has been created by MSG3_new ():
-
-Amal Sent the Message 3 ( 0 bytes ) to Basim
-***************************************************
-         MSG4 Receive
-***************************************************
-***************************************************
-         MSG5 New
-***************************************************
-
-Amal has terminated normally. Goodbye
