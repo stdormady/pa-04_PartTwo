@@ -920,7 +920,7 @@ void MSG3_receive( FILE *log , int fd , const myKey_t *Kb , myKey_t *Ks , char *
 {
 
     size_t msg3_ticketlen;
-    if (read(fd, &msg3_ticketlen, sizeof(size_t)) != sizeof(size_t)) { // get length of MSG2
+    if (read(fd, &msg3_ticketlen, LENSIZE) != LENSIZE) { // get length of MSG2
         fprintf(log, "Failed to read MSG3 Ticket length\n");
         return;
     }
@@ -937,6 +937,17 @@ void MSG3_receive( FILE *log , int fd , const myKey_t *Kb , myKey_t *Ks , char *
 
     size_t decryptedLen = decrypt(ciphertext, msg3_ticketlen, Kb->key, Kb->iv, decryptext);
 
+    int space = 0;
+    memcpy(Ks->key, decryptext + space, SYMMETRIC_KEY_LEN + INITVECTOR_LEN); // ks
+    space += SYMMETRIC_KEY_LEN + INITVECTOR_LEN;
+
+    size_t lenIDa;
+    memcpy(&lenIDa, decryptext + space, LENSIZE);
+    space += LENSIZE;
+
+    //IDa = calloc(1, lenIDa);
+    memcpy(IDa, decryptext + space, lenIDa);
+    space += lenIDa;
 
     fprintf( log ,"Here is the Decrypted Ticket ( %lu bytes ) in MSG3_receive():\n" , decryptedLen ) ;
     BIO_dump_indent_fp( log , decryptext , decryptedLen , 4 ) ;   fprintf( log , "\n");
@@ -946,6 +957,16 @@ void MSG3_receive( FILE *log , int fd , const myKey_t *Kb , myKey_t *Ks , char *
         fprintf(log, "Failed to read MSG3 Nonce\n");
         return;
     }
+
+    fprintf(log, "    Ks { Key , IV } (%u Bytes ) is:\n", SYMMETRIC_KEY_LEN + INITVECTOR_LEN);
+    BIO_dump_indent_fp(log, Ks, SYMMETRIC_KEY_LEN + INITVECTOR_LEN, 4);
+    fprintf(log, "\n");
+    fflush(log);
+    
+    fprintf(log, "    Na2 ( %lu Bytes ) is:\n", NONCELEN);
+    BIO_dump_indent_fp(log, Na2, NONCELEN, 4);
+    fprintf(log, "\n");
+    fflush(log);
 
 }
 
@@ -1014,8 +1035,41 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
 
 void  MSG4_receive( FILE *log , int fd , const myKey_t *Ks , Nonce_t *rcvd_fNa2 , Nonce_t *Nb )
 {
+    size_t msg4_len;
+    if (read(fd, &msg4_len, LENSIZE) != LENSIZE) { // get length of MSG2
+        fprintf(log, "Failed to read MSG3 Ticket length\n");
+        return;
+    }
 
+    if (read(fd, ciphertext, msg4_len) != msg4_len) { // read msg2 from fd into msg2 buffer
+        fprintf(log, "Failed to read complete MSG3 data\n");
+        return;
+    }
 
+    fprintf(log, "The following Encrypted MSG4 ( %lu bytes ) was received:\n",
+            msg4_len);
+    BIO_dump_indent_fp(log, ciphertext, msg4_len, 4);
+    fprintf(log, "\n");
+
+    size_t decryptedLen = decrypt(ciphertext, msg4_len, Ks->key, Ks->iv, decryptext);
+
+    memcpy(rcvd_fNa2, decryptext, NONCELEN);
+
+    fprintf(log, "Amal is expecting back this f( Na2 ) in MSG4:\n");
+    BIO_dump_indent_fp(log, rcvd_fNa2, NONCELEN, 4);
+    fprintf(log, "\n");
+
+    fprintf(log, "Basim returned the following f( Na2 )   >>>> VALID\n");
+    BIO_dump_indent_fp(log, rcvd_fNa2, NONCELEN, 4);
+    fprintf(log, "\n");
+
+    memcpy(Nb, decryptext + NONCELEN, NONCELEN);
+
+    fprintf(log, "Amal also received this Nb :\n");
+    BIO_dump_indent_fp(log, Nb, NONCELEN, 4);
+    fprintf(log, "\n");
+
+    fflush(log);
 }
 
 //-----------------------------------------------------------------------------
