@@ -985,11 +985,9 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
 
     // Construct MSG4 Plaintext = { f(Na2)  ||  Nb }
     // Use the global scratch buffer plaintext[] for MSG4 plaintext and fill it in with component values
-    LenMsg4 = LENSIZE + NONCELEN + NONCELEN;
+    LenMsg4 = NONCELEN + NONCELEN;
     size_t space = 0;
 
-    memcpy (plaintext + space, LenMsg4, LENSIZE);
-    space += LENSIZE;
     Nonce_t copy ;
     memcpy (&copy, fNa2, NONCELEN);
 
@@ -999,14 +997,14 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
     BIO_dump_indent_fp( stderr , copy , NONCELEN, 4 ) ;
 
     memcpy (plaintext + space, copy, NONCELEN);
-     space += NONCELEN;
+    space += NONCELEN;
     memcpy (plaintext + space, Nb, NONCELEN);
     space += NONCELEN;
 
 
     // Now, encrypt MSG4 plaintext using the session key Ks;
     // Use the global scratch buffer ciphertext[] to collect the result. Make sure it fits.
-    size_t encrLen = encrypt (plaintext, LenMsg4, Ks->key, Ks->iv, ciphertext2);
+    size_t encrLen = encrypt (plaintext, LenMsg4, Ks->key, Ks->iv, ciphertext);
     LenMsg4 = encrLen;
 
     // Now allocate a buffer for the caller, and copy the encrypted MSG4 to it

@@ -30,8 +30,6 @@ Here is the Decrypted Ticket ( 69 bytes ) in MSG3_receive():
     0030 - 0d 00 00 00 00 00 00 00-41 6d 61 6c 20 69 73 20   ........Amal is 
     0040 - 48 6f 70 65 00                                    Hope.
 
-<<<<<<< HEAD
-=======
     Ks { Key , IV } (48 Bytes ) is:
     0000 - e9 c4 5c 56 03 c9 ad 47-78 b9 97 5c 4a e6 f2 7f   ..\V...Gx..\J...
     0010 - 7d ef 6b 03 55 05 b2 0e-9d 35 90 88 67 e7 85 dd   }.k.U....5..g...
@@ -43,9 +41,16 @@ Here is the Decrypted Ticket ( 69 bytes ) in MSG3_receive():
 ***************************************************
          MSG4 New
 ***************************************************
-***************************************************
+Basim is sending this f( Na2 ) in MSG4:
+    0000 - 00 00 00 00                                       ....
+
+Basim is sending this nonce Nb in MSG4:
+    0000 - 99 88 77 66                                       ..wf
+
+The following Encrypted MSG4 ( 16 bytes ) has been created by MSG4_new ():  
+    0000 - 00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00   ................
+Basim Sent the above MSG4 to Amal***************************************************
          MSG5 Receive
 ***************************************************
 
 Basim has terminated normally. Goodbye
->>>>>>> f8ce6c02fb027568d03e265257dff2c16a9a03b4
