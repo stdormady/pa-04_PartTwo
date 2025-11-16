@@ -168,6 +168,7 @@ int main ( int argc , char * argv[] )
     BANNER( log ) ;
     fprintf( log , "         MSG3 New\n");
     BANNER( log ) ;
+    fflush (log);
 
     size_t  LenMsg3 ;
     uint8_t  *msg3 ;
