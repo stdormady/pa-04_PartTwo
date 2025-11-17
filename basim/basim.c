@@ -147,6 +147,10 @@ int main ( int argc , char * argv[] )
     fprintf( log , "         MSG5 Receive\n");
     BANNER( log ) ;
 
+    Nonce_t fNb;
+
+    MSG5_receive (log, fd_A2B, &Ks, &fNb);
+
     //*************************************   
     // Final Clean-Up
     //*************************************

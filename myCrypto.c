@@ -1134,14 +1134,47 @@ void  MSG5_receive( FILE *log , int fd , const myKey_t *Ks , Nonce_t *fNb )
 {
 
     size_t    LenMSG5cipher ;
+    if (read(fd, &LenMSG5cipher, LENSIZE) != LENSIZE) { // get length of MSG2
+        fprintf(log, "Failed to read MSG3 Ticket length\n");
+        return;
+    }
+
+    if (read(fd, ciphertext, LenMSG5cipher) != LenMSG5cipher) { // read msg2 from fd into msg2 buffer
+        fprintf(log, "Failed to read complete MSG3 data\n");
+        return;
+    }
+
+    // size_t decryptedLen = decrypt(ciphertext, msg4_len, Ks->key, Ks->iv, decryptext);
+
+    // memcpy(rcvd_fNa2, decryptext, NONCELEN);
+
+    size_t decryptedLen = decrypt(ciphertext, LenMSG5cipher, Ks->key, Ks->iv, decryptext);
+
+    fprintf(log, "Basim is expecting back this f( Nb ) in MSG5:\n");
+
+    Nonce_t copy ;
+    memcpy (fNb, decryptext, NONCELEN);
+
+    // fNonce (&copy, fNb)
+
+    BIO_dump_indent_fp(log, fNb, NONCELEN, 4);
+    fprintf(log, "\n");
     
     // Read Len( Msg5 ) followed by reading Msg5 itself
     // Always make sure read() and write() succeed
     // Use the global scratch buffer ciphertext[] to receive encrypted MSG5.
     // Make sure it fits.
 
+    // size_t decryptedLen = decrypt(ciphertext, LenMSG5cipher, Ks->key, Ks->iv, decryptext);
+
 
     fprintf( log ,"The following Encrypted MSG5 ( %lu bytes ) has been received:\n" , LenMSG5cipher );
+    BIO_dump_indent_fp(log, ciphertext, LenMSG5cipher, 4);
+    fprintf(log, "\n");
+
+    fprintf(log, "Basim received Message 5 from Amal with this f( Nb ): >>>> VALID\n");
+    BIO_dump_indent_fp(log, fNb, NONCELEN, 4);
+    fprintf(log, "\n");
 
 
     // Now, Decrypt MSG5 using Ks
