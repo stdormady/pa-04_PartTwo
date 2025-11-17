@@ -129,6 +129,7 @@ int main ( int argc , char * argv[] )
     size_t *LenMsg4 ;
     u_int8_t *msg4 ;
     Nonce_t fNa2;
+    memcpy (&fNa2, &Na, NONCELEN);
 
     LenMsg4 = MSG4_new (log, &msg4, &Ks, &fNa2, &Nb);
 

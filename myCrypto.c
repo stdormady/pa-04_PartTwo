@@ -989,14 +989,17 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
     size_t space = 0;
 
     Nonce_t copy ;
+    // uint32_t value = ntohl (*fNa2);
+    // fprintf (log, "Before Mem cpy fNa2: %X, copy: %X\n", fNa2, copy);
     memcpy (&copy, fNa2, NONCELEN);
+    // fprintf (log, "After Mem cpy fNa2: %X, copy: %X\n", fNa2, copy);
 
-    fNonce (&copy, fNa2);
+    fNonce (copy, fNa2);
 
     // fprintf( stderr , "Basim is sending this f( Na2 ) in MSG4:\n") ;
     // BIO_dump_indent_fp( stderr , fNa2 , NONCELEN, 4 ) ;
 
-    memcpy (plaintext + space, fNa2, NONCELEN);
+    memcpy (plaintext + space, copy, NONCELEN);
     space += NONCELEN;
     memcpy (plaintext + space, Nb, NONCELEN);
     space += NONCELEN;
@@ -1006,14 +1009,14 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
     // Use the global scratch buffer ciphertext[] to collect the result. Make sure it fits.
     size_t encrLen = encrypt (plaintext, LenMsg4, Ks->key, Ks->iv, ciphertext);
     LenMsg4 = encrLen;
-    fprintf (log, "Len msg4: %u", LenMsg4);
+    // fprintf (log, "Len msg4: %u", LenMsg4);
 
     // Now allocate a buffer for the caller, and copy the encrypted MSG4 to it
     *msg4 = malloc( LenMsg4 ) ;
     memcpy (*msg4, ciphertext, LenMsg4);
 
     fprintf( log , "Basim is sending this f( Na2 ) in MSG4:\n") ;
-    BIO_dump_indent_fp( log , fNa2 , NONCELEN, 4 ) ; fprintf (log, "\n");
+    BIO_dump_indent_fp( log , copy , NONCELEN, 4 ) ; fprintf (log, "\n");
 
     fprintf( log , "Basim is sending this nonce Nb in MSG4:\n") ;
     BIO_dump_indent_fp( log , Nb , NONCELEN, 4 ) ; fprintf (log, "\n");
@@ -1021,7 +1024,7 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
 
     fprintf( log , "The following Encrypted MSG4 ( %lu bytes ) has been"
                    " created by MSG4_new ():  \n" , LenMsg4 ) ;
-    BIO_dump_indent_fp( log , *msg4 , LenMsg4, 4 ) ;
+    BIO_dump_indent_fp( log , *msg4 , LenMsg4, 4 ) ; fprintf(log, "\n");
 
     return LenMsg4 ;
     

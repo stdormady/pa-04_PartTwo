@@ -196,6 +196,8 @@ int main ( int argc , char * argv[] )
     fprintf( log , "         MSG4 Receive\n");
     BANNER( log ) ;
 
+    MSG4_receive = ();
+
     //*************************************
     // Construct & Send    Message 5
     //*************************************
