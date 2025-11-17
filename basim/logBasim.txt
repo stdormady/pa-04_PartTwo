@@ -2,7 +2,7 @@
 Starting Basim
 ***************************************************
 
-<readFrom Amal> FD=7 , <sendTo Amal> FD=10
+<readFr. Amal> FD=7 , <sendTo Amal> FD=10
 
 Basim has this Master Kb { key , IV }
     0000 - 72 17 92 80 3c 7d 1d c5-6a 13 78 1d e0 55 10 21   r...<}..j.x..U.!
@@ -30,34 +30,25 @@ Here is the Decrypted Ticket ( 69 bytes ) in MSG3_receive():
     0030 - 0d 00 00 00 00 00 00 00-41 6d 61 6c 20 69 73 20   ........Amal is 
     0040 - 48 6f 70 65 00                                    Hope.
 
+Basim received Message 3 from Amal with the following content:
     Ks { Key , IV } (48 Bytes ) is:
     0000 - e9 c4 5c 56 03 c9 ad 47-78 b9 97 5c 4a e6 f2 7f   ..\V...Gx..\J...
     0010 - 7d ef 6b 03 55 05 b2 0e-9d 35 90 88 67 e7 85 dd   }.k.U....5..g...
     0020 - 8d ba 5c 47 10 37 c7 50-2f c3 38 eb 57 1c 64 31   ..\G.7.P/.8.W.d1
 
+    IDa = 'Amal is Hope'
     Na2 ( 4 Bytes ) is:
     0000 - dd cc bb aa                                       ....
 
 ***************************************************
          MSG4 New
 ***************************************************
-Len msg4: 16Basim is sending this f( Na2 ) in MSG4:
-    0000 - 00 00 00 00                                       ....
+Basim is sending this f( Na2 ) in MSG4:
+    0000 - dd cc bb ab                                       ....
 
 Basim is sending this nonce Nb in MSG4:
     0000 - 99 88 77 66                                       ..wf
 
 The following Encrypted MSG4 ( 16 bytes ) has been created by MSG4_new ():  
-<<<<<<< HEAD
-    0000 - 00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00   ................
-Basim Sent the above MSG4 to Amal
+    0000 - e3 39 ea e1 38 6b 50 8d-42 25 dc 41 18 8f 2b 37   .9..8kP.B%.A..+7
 
-***************************************************
-=======
-    0000 - 8e 46 4d 8d 8b 66 6e 2c-84 44 d9 9a e2 9b ec 8e   .FM..fn,.D......
-Basim Sent the above MSG4 to Amal***************************************************
->>>>>>> 13e3ba60250c50b64b96fc2b120b45523fa01c67
-         MSG5 Receive
-***************************************************
-
-Basim has terminated normally. Goodbye

@@ -126,7 +126,7 @@ int main ( int argc , char * argv[] )
     BANNER( log ) ;
     fprintf( log , "         MSG4 New\n");
     BANNER( log ) ;
-    size_t LenMsg4 ;
+    size_t *LenMsg4 ;
     u_int8_t *msg4 ;
     Nonce_t fNa2;
 

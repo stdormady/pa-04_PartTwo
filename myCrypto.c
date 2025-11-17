@@ -988,10 +988,10 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
     LenMsg4 = NONCELEN + NONCELEN;
     size_t space = 0;
 
-    // Nonce_t copy ;
-    // memcpy (&copy, fNa2, NONCELEN);
+    Nonce_t copy ;
+    memcpy (&copy, fNa2, NONCELEN);
 
-    // fNonce (&copy, fNa2);
+    fNonce (&copy, fNa2);
 
     // fprintf( stderr , "Basim is sending this f( Na2 ) in MSG4:\n") ;
     // BIO_dump_indent_fp( stderr , fNa2 , NONCELEN, 4 ) ;
@@ -1055,7 +1055,13 @@ void  MSG4_receive( FILE *log , int fd , const myKey_t *Ks , Nonce_t *rcvd_fNa2 
     memcpy(rcvd_fNa2, decryptext, NONCELEN);
 
     fprintf(log, "Amal is expecting back this f( Na2 ) in MSG4:\n");
-    BIO_dump_indent_fp(log, rcvd_fNa2, NONCELEN, 4);
+
+    Nonce_t copy ;
+    memcpy (&copy, Nb, NONCELEN);
+
+    fNonce (&copy, Nb);
+
+    BIO_dump_indent_fp(log, copy, NONCELEN, 4);
     fprintf(log, "\n");
 
     fprintf(log, "Basim returned the following f( Na2 )   >>>> VALID\n");
@@ -1148,10 +1154,8 @@ void     fNonce( Nonce_t r , Nonce_t n )
 
     // memcpy(r, n, NONCELEN);
 
+    uint32_t value = ntohl(*n);  
+    value++;      
+    *r = htonl(value);  
 
-    // for (int i = NONCELEN - 1; i >= 0; i--) {
-    //     r[i]++;
-    //     if (r[i] != 0x00)
-    //         break;
-    // }
 }
