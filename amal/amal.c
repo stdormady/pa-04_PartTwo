@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------
 pa-04_PartTwo:  Intro to Enhanced Needham-Schroeder Key-Exchange with TWO-way Authentication
 
-FILE:   amal.c     SKELETON
+FILE:   amal.c
 
 Written By: 
      1- Steve Dormady
@@ -196,7 +196,10 @@ int main ( int argc , char * argv[] )
     fprintf( log , "         MSG4 Receive\n");
     BANNER( log ) ;
 
-    MSG4_receive = ();
+    Nonce_t rcvd;
+    Nonce_t Nb;
+
+    MSG4_receive(log, fd_B2A, &Ks, &rcvd, &Nb);
 
     //*************************************
     // Construct & Send    Message 5
@@ -205,7 +208,15 @@ int main ( int argc , char * argv[] )
     BANNER( log ) ;
     fprintf( log , "         MSG5 New\n");
     BANNER( log ) ;
+    size_t LenMsg5;
+    uint8_t *msg5;
 
+    LenMsg5 = MSG5_new (log, &msg5, &Ks, &Nb);
+
+    write (fd_A2B, LenMsg5, LENSIZE);
+    write (fd_A2B, msg5, LenMsg5);
+
+    fprintf (log, "Amal sent Message 5 ( %u bytes ) to Basim\n", LenMsg5);
 
     //*************************************   
     // Final Clean-Up

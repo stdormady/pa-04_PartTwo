@@ -958,11 +958,13 @@ void MSG3_receive( FILE *log , int fd , const myKey_t *Kb , myKey_t *Ks , char *
         return;
     }
 
+    fprintf (log, "Basim received Message 3 from Amal with the following content:\n");
     fprintf(log, "    Ks { Key , IV } (%u Bytes ) is:\n", SYMMETRIC_KEY_LEN + INITVECTOR_LEN);
     BIO_dump_indent_fp(log, Ks, SYMMETRIC_KEY_LEN + INITVECTOR_LEN, 4);
     fprintf(log, "\n");
     fflush(log);
     
+    fprintf (log , "    IDa = \'%s\'\n", IDa);
     fprintf(log, "    Na2 ( %lu Bytes ) is:\n", NONCELEN);
     BIO_dump_indent_fp(log, Na2, NONCELEN, 4);
     fprintf(log, "\n");
@@ -991,7 +993,7 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
     Nonce_t copy ;
     // uint32_t value = ntohl (*fNa2);
     // fprintf (log, "Before Mem cpy fNa2: %X, copy: %X\n", fNa2, copy);
-    memcpy (&copy, fNa2, NONCELEN);
+    memcpy (copy, fNa2, NONCELEN);
     // fprintf (log, "After Mem cpy fNa2: %X, copy: %X\n", fNa2, copy);
 
     fNonce (copy, fNa2);
@@ -1092,18 +1094,29 @@ size_t  MSG5_new( FILE *log , uint8_t **msg5, const myKey_t *Ks ,  Nonce_t *fNb 
     size_t  LenMSG5cipher  ;
 
     // Construct MSG5 Plaintext  = {  f(Nb)  }
-    // Use the global scratch buffer plaintext[] for MSG5 plaintext. Make sure it fits 
+    // Use the global scratch buffer plaintext[] for MSG5 plaintext. Make sure it fits
+    Nonce_t copy ;
+    fNonce (copy, fNb);
+
+    memcpy (plaintext, copy, NONCELEN);
+    LenMSG5cipher = NONCELEN;
 
 
     // Now, encrypt( Ks , {plaintext} );
     // Use the global scratch buffer ciphertext[] to collect result. Make sure it fits.
+    LenMSG5cipher = encrypt (plaintext, LenMSG5cipher, Ks->key, Ks->iv, ciphertext);
 
 
     // Now allocate a buffer for the caller, and copy the encrypted MSG5 to it
+
+    *msg5 = malloc( LenMSG5cipher ) ;
+    memcpy (*msg5, ciphertext, LenMSG5cipher);
+
+
     
-    // *msg5 = malloc( ... ) ;
-
-
+    fprintf( log , "Amal is sending this f( Nb ) in MSG5:\n") ;
+    BIO_dump_indent_fp( log , copy , NONCELEN , 4 ) ;    fprintf( log , "\n" ) ;    
+    fflush( log ) ; 
     fprintf( log , "The following Encrypted MSG5 ( %lu bytes ) has been"
                    " created by MSG5_new ():  \n" , LenMSG5cipher ) ;
     BIO_dump_indent_fp( log , *msg5 , LenMSG5cipher , 4 ) ;    fprintf( log , "\n" ) ;    

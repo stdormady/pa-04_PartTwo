@@ -69,7 +69,8 @@ int main ( int argc , char * argv[] )
     fprintf( log , "Starting Basim\n"  ) ;
     BANNER( log ) ;
 
-    fprintf( log , "\n<readFrom Amal> FD=%d , <sendTo Amal> FD=%d\n\n" , fd_A2B , fd_B2A );
+    // changed to match log file...
+    fprintf( log , "\n<readFr. Amal> FD=%d , <sendTo Amal> FD=%d\n\n" , fd_A2B , fd_B2A );
 
     // Get Basim's master keys with the KDC
     myKey_t   Kb ;    // Basim's master key with the KDC    
@@ -115,9 +116,9 @@ int main ( int argc , char * argv[] )
 
     myKey_t Ks;
     char *IDa;
-    Nonce_t Na;
+    Nonce_t Na2;
 
-    MSG3_receive( log , fd_A2B , &Kb , &Ks, &IDa, &Na) ;
+    MSG3_receive( log , fd_A2B , &Kb , &Ks, &IDa, &Na2) ;
 
     //*************************************
     // Construct & Send    Message 4
@@ -129,7 +130,7 @@ int main ( int argc , char * argv[] )
     size_t *LenMsg4 ;
     u_int8_t *msg4 ;
     Nonce_t fNa2;
-    memcpy (&fNa2, &Na, NONCELEN);
+    memcpy (&fNa2, &Na2, NONCELEN);
 
     LenMsg4 = MSG4_new (log, &msg4, &Ks, &fNa2, &Nb);
 
