@@ -215,7 +215,7 @@ int main ( int argc , char * argv[] )
         perror("write msg5");
     }
 
-    fprintf (log, "Amal sent Message 5 ( %u bytes ) to Basim\n", LenMsg5);
+    fprintf (log, "Amal sent Message 5 ( %lu bytes ) to Basim\n", LenMsg5);
     free (msg5);
 
     //*************************************   

@@ -948,7 +948,7 @@ void MSG3_receive( FILE *log , int fd , const myKey_t *Kb , myKey_t *Ks , char *
     fprintf(log, "\n");
     fflush(log);
     
-    fprintf (log , "    IDa = \'%s\'\n", IDa);
+    fprintf (log , "    IDa = \'%s\'\n", IDa); // warning?
     fprintf(log, "    Na2 ( %lu Bytes ) is:\n", NONCELEN);
     BIO_dump_indent_fp(log, Na2, NONCELEN, 4);
     fprintf(log, "\n");
@@ -980,7 +980,7 @@ size_t  MSG4_new( FILE *log , uint8_t **msg4, const myKey_t *Ks , Nonce_t *fNa2 
     memcpy (copy, fNa2, NONCELEN);
     // fprintf (log, "After Mem cpy fNa2: %X, copy: %X\n", fNa2, copy);
 
-    fNonce (copy, fNa2);
+    fNonce (copy, *fNa2);
 
     // fprintf( stderr , "Basim is sending this f( Na2 ) in MSG4:\n") ;
     // BIO_dump_indent_fp( stderr , fNa2 , NONCELEN, 4 ) ;
@@ -1081,7 +1081,7 @@ size_t  MSG5_new( FILE *log , uint8_t **msg5, const myKey_t *Ks ,  Nonce_t *fNb 
     // Construct MSG5 Plaintext  = {  f(Nb)  }
     // Use the global scratch buffer plaintext[] for MSG5 plaintext. Make sure it fits
     Nonce_t copy ;
-    fNonce (copy, fNb);
+    fNonce (copy, *fNb);
 
     memcpy (plaintext, copy, NONCELEN);
     LenMSG5cipher = NONCELEN;
