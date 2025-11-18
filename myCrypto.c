@@ -663,10 +663,10 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     memcpy(plaintext + space, IDa, LenA);
     space += LenA;
 
-    char *ticketCipher = calloc (1, LenTktPlain);
+    //char *ticketCipher = calloc (1, LenTktPlain);
 
     LenMsg2 += LenTktPlain;
-    size_t ticketLen = encrypt(plaintext, LenTktPlain, Kb->key, Kb->iv, ciphertext);
+    size_t ticketLen = encrypt(plaintext, LenTktPlain, Kb->key, Kb->iv, ciphertext); //encrypt the ticket
 
 
     // Use that global array as a scratch buffer for building the plaintext of the ticket
@@ -686,7 +686,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     // Fill in Msg2 Plaintext:  Ks || L(IDb) || IDb  || L(Na) || Na || lenTktCipher) || TktCipher
     // Reuse that global array plaintext[] as a scratch buffer for building the plaintext of the MSG2
     size_t LenB    = strlen(IDb) + 1; 
-    size_t LenMsgPlain = KEYSIZE + LENSIZE + LenB + NONCELEN + LENSIZE + ticketLen;
+    size_t LenMsgPlain = KEYSIZE + LENSIZE + LenB + NONCELEN + LENSIZE + ticketLen; // length of unencrypted message
 
     LenMsg2 += LenMsgPlain;
     space = 0;
@@ -707,13 +707,13 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     // Use the global scratch buffer ciphertext2[] to collect the results
     size_t final = encrypt(plaintext, LenMsgPlain, Ka->key, Ka->iv, ciphertext2);
     // errors here
-    LenMsg2 = final;
+    LenMsg2 = final; // length of the entire encrypted message
 
     // allocate memory on behalf of the caller for a copy of MSG2 ciphertext
     *msg2 = calloc(1, LenMsg2 + LENSIZE);
 
     // Copy the encrypted ciphertext to Caller's msg2 buffer.
-    memcpy (*msg2, ciphertext2, LenMsg2);
+    memcpy (*msg2, ciphertext2, LenMsg2); // copy the encrypted message into the msg2 buffer
 
 
     fprintf( log , "Plaintext Ticket (%lu Bytes) is\n" ,  LenTktPlain  ) ;
@@ -738,7 +738,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
 
     fflush( log ) ;    
     
-    return LenMsg2 ;    
+    return LenMsg2 ;  
 
 }
 
