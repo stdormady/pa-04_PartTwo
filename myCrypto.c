@@ -666,7 +666,6 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     // char *ticketCipher = calloc (1, LenTktPlain);
 
     // encrypting the ticket
-    LenMsg2 += LenTktPlain;
     size_t ticketLen = encrypt(plaintext, LenTktPlain, Kb->key, Kb->iv, ciphertext); //encrypt the ticket
 
 
@@ -711,7 +710,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     LenMsg2 = final;
 
     // allocate memory on behalf of the caller for a copy of MSG2 ciphertext
-    *msg2 = calloc(1, LenMsg2 + LENSIZE);
+    *msg2 = calloc(1, LenMsg2);
 
     // Copy the encrypted ciphertext to Caller's msg2 buffer.
     memcpy (*msg2, ciphertext2, LenMsg2); // copy the encrypted message into the msg2 buffer
@@ -815,19 +814,6 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
     memcpy(*tktCipher, decryptext + space, ticketLen);
     space += ticketLen;
 
-    // printing
-
-    // fprintf(log, "\nAmal decrypted message 2 from the KDC into the following:\n");
-
-    // fprintf(log, "    Ks { Key , IV } (%u Bytes ) is:\n", SYMMETRIC_KEY_LEN + INITVECTOR_LEN);
-    // BIO_dump_indent_fp(log, Ks, SYMMETRIC_KEY_LEN + INITVECTOR_LEN, 4);
-    // fprintf(log, "\n");
-    // // fflush(log);
-
-    // fprintf(log, "    IDb (%lu Bytes):   ..... MATCH\n", lenIDb);
-    // BIO_dump_indent_fp(log, *IDb, lenIDb, 4);
-    // fprintf(log, "\n");
-
     fprintf(log, "    Received Copy of Na (%lu bytes):    >>>> VALID\n", NONCELEN);
     BIO_dump_indent_fp(log, Na, NONCELEN, 4);
     fprintf(log, "\n");
@@ -837,8 +823,6 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
     fprintf(log, "\n");
 
     fflush( log ) ;
-
-    //believe we should memcpy plaintext to all 0's too
 }
 
 //-----------------------------------------------------------------------------
