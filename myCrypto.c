@@ -660,7 +660,6 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     memcpy(plaintext + space, &LenA, LENSIZE);
     space += LENSIZE;
     memcpy(plaintext + space, IDa, LenA);
-    space += LenA;
 
     // not used, but maybe we should?
     // char *ticketCipher = calloc (1, LenTktPlain);
@@ -701,7 +700,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     memcpy(plaintext + space, &ticketLen, LENSIZE);
     space += LENSIZE;
     memcpy(plaintext + space, ciphertext, ticketLen);
-    space += ticketLen;
+
 
     // Now, encrypt Message 2 using Ka. 
     // Use the global scratch buffer ciphertext2[] to collect the results
@@ -1077,7 +1076,6 @@ size_t  MSG5_new( FILE *log , uint8_t **msg5, const myKey_t *Ks ,  Nonce_t *fNb 
 
 
     // Now allocate a buffer for the caller, and copy the encrypted MSG5 to it
-
     *msg5 = malloc( LenMSG5cipher ) ;
     memcpy (*msg5, ciphertext, LenMSG5cipher);
 
@@ -1102,6 +1100,11 @@ size_t  MSG5_new( FILE *log , uint8_t **msg5, const myKey_t *Ks ,  Nonce_t *fNb 
 void  MSG5_receive( FILE *log , int fd , const myKey_t *Ks , Nonce_t *fNb )
 {
 
+    // Read Len( Msg5 ) followed by reading Msg5 itself
+    // Always make sure read() and write() succeed
+    // Use the global scratch buffer ciphertext[] to receive encrypted MSG5.
+    // Make sure it fits.
+
     size_t    LenMSG5cipher ;
     if (read(fd, &LenMSG5cipher, LENSIZE) != LENSIZE) { // get length of MSG2
         fprintf(log, "Failed to read MSG3 Ticket length\n");
@@ -1113,28 +1116,20 @@ void  MSG5_receive( FILE *log , int fd , const myKey_t *Ks , Nonce_t *fNb )
         return;
     }
 
-    // size_t decryptedLen = decrypt(ciphertext, msg4_len, Ks->key, Ks->iv, decryptext);
+    // Now, Decrypt MSG5 using Ks
+    // Use the global scratch buffer decryptext[] to collect the results of decryption
+    // Make sure it fits
 
-    // memcpy(rcvd_fNa2, decryptext, NONCELEN);
 
     size_t decryptedLen = decrypt(ciphertext, LenMSG5cipher, Ks->key, Ks->iv, decryptext);
 
     fprintf(log, "Basim is expecting back this f( Nb ) in MSG5:\n");
 
-    Nonce_t copy ;
+    // Parse MSG5 into its components f( Nb )
     memcpy (fNb, decryptext, NONCELEN);
-
-    // fNonce (&copy, fNb)
 
     BIO_dump_indent_fp(log, fNb, NONCELEN, 4);
     fprintf(log, "\n");
-    
-    // Read Len( Msg5 ) followed by reading Msg5 itself
-    // Always make sure read() and write() succeed
-    // Use the global scratch buffer ciphertext[] to receive encrypted MSG5.
-    // Make sure it fits.
-
-    // size_t decryptedLen = decrypt(ciphertext, LenMSG5cipher, Ks->key, Ks->iv, decryptext);
 
 
     fprintf( log ,"The following Encrypted MSG5 ( %lu bytes ) has been received:\n" , LenMSG5cipher );
@@ -1144,16 +1139,6 @@ void  MSG5_receive( FILE *log , int fd , const myKey_t *Ks , Nonce_t *fNb )
     fprintf(log, "Basim received Message 5 from Amal with this f( Nb ): >>>> VALID\n");
     BIO_dump_indent_fp(log, fNb, NONCELEN, 4);
     fprintf(log, "\n");
-
-
-    // Now, Decrypt MSG5 using Ks
-    // Use the global scratch buffer decryptext[] to collect the results of decryption
-    // Make sure it fits
-
-
-    // Parse MSG5 into its components f( Nb )
-
-
 
 }
 
@@ -1166,14 +1151,8 @@ void     fNonce( Nonce_t r , Nonce_t n )
 {
     // Note that the nonces are store in Big-Endian byte order
     // This affects how you do arithmetice on the noces, e.g. when you add 1
-    // int base = (n + 1);
-    // int mod = pow(2, NONCELEN);
-    // r = base % mod;
-
-    // memcpy(r, n, NONCELEN);
 
     uint32_t value = ntohl(*n);  
     value++;      
     *r = htonl(value);  
-
 }
