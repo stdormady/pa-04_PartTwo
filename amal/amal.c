@@ -173,11 +173,6 @@ int main ( int argc , char * argv[] )
     size_t  LenMsg3 ;
     uint8_t  *msg3 ;
 
-    // fprintf( log , "Amal is sending this to Basim in Message 3:\n    Na2 ( %lu Bytes ) is:\n" , NONCELEN ) ;
-    // BIO_dump_indent_fp(log, &Na2, NONCELEN, 4);
-    // fprintf(log, "\n");
-    // fflush(log);
-
     LenMsg3 = MSG3_new( log , &msg3 , lenTktCipher , tktCipher , &Na2 ) ;
 
     
@@ -213,8 +208,12 @@ int main ( int argc , char * argv[] )
 
     LenMsg5 = MSG5_new (log, &msg5, &Ks, &Nb);
 
-    write (fd_A2B, &LenMsg5, LENSIZE);
-    write (fd_A2B, msg5, LenMsg5);
+    if (write(fd_A2B, &LenMsg5, LENSIZE) != LENSIZE) {
+        perror("write LenMsg5");
+    }
+    if (write(fd_A2B, msg5, LenMsg5) != (ssize_t)LenMsg5) {
+        perror("write msg5");
+    }
 
     fprintf (log, "Amal sent Message 5 ( %u bytes ) to Basim\n", LenMsg5);
     free (msg5);
