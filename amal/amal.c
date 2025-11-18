@@ -213,10 +213,11 @@ int main ( int argc , char * argv[] )
 
     LenMsg5 = MSG5_new (log, &msg5, &Ks, &Nb);
 
-    write (fd_A2B, LenMsg5, LENSIZE);
+    write (fd_A2B, &LenMsg5, LENSIZE);
     write (fd_A2B, msg5, LenMsg5);
 
     fprintf (log, "Amal sent Message 5 ( %u bytes ) to Basim\n", LenMsg5);
+    free (msg5);
 
     //*************************************   
     // Final Clean-Up

@@ -644,7 +644,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
                    const myKey_t *Ks , const char *IDa , const char *IDb  , Nonce_t *Na )
 {
 
-    size_t LenMsg2  = 0 ;
+    size_t LenMsg2  = 0;
     int space = 0;
 
     //---------------------------------------------------------------------------------------
@@ -652,8 +652,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     // in the global scratch buffer plaintext[]
     size_t LenA    = strlen(IDa) + 1; 
     size_t LenTktPlain = KEYSIZE + LENSIZE + LenA; // This is good
-    // fprintf (log, "After sizing Len: %u", LenTktPlain);
-    // fflush(log);
+
 
     // is this ok, or should we memcpy into the plaintext buffer, then encrypt?
     // int *TktPlain = calloc(1,LenTktPlain);
@@ -665,17 +664,10 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     space += LenA;
 
     char *ticketCipher = calloc (1, LenTktPlain);
-    // strncpy (ticketCopy, plaintext, LenTktPlain);
-    // memcpy (ticketCopy, plaintext, LenTktPlain);
+
     LenMsg2 += LenTktPlain;
     size_t ticketLen = encrypt(plaintext, LenTktPlain, Kb->key, Kb->iv, ciphertext);
-    // SAYS IN SPEC TO DYNAMICALLY ALLOCATE FOR RECIEVED COPIES, DONE BELOW
-    // HERE ABOVE IS GOOD
-    // fprintf (log, "\nAfter first encrypt TicketLen: %u\n", ticketLen);
-    // fflush(log);
-    // char *ticketCopy = calloc (1, LenTktPlain);
-    // // strncpy (ticketCopy, plaintext, LenTktPlain);
-    // memcpy (ticketCopy, plaintext, LenTktPlain);
+
 
     // Use that global array as a scratch buffer for building the plaintext of the ticket
     // Compute its encrypted version in the global scratch buffer ciphertext[]
@@ -691,13 +683,11 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     char *tempPlaintext = calloc(1, LenTktPlain); // this is to print the correct plaintext ticket.
     memcpy(tempPlaintext, plaintext, LenTktPlain);
 
-    // meant to 0 out...
-    // memcpy (plaintext, ciphertext, PLAINTEXT_LEN_MAX);
     // Fill in Msg2 Plaintext:  Ks || L(IDb) || IDb  || L(Na) || Na || lenTktCipher) || TktCipher
     // Reuse that global array plaintext[] as a scratch buffer for building the plaintext of the MSG2
     size_t LenB    = strlen(IDb) + 1; 
     size_t LenMsgPlain = KEYSIZE + LENSIZE + LenB + NONCELEN + LENSIZE + ticketLen;
-    //fprintf (log, "size of LenMsgPlain: %u\n", LenMsgPlain);
+
     LenMsg2 += LenMsgPlain;
     space = 0;
     memcpy(plaintext + space, Ks, KEYSIZE);
@@ -712,28 +702,19 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     space += LENSIZE;
     memcpy(plaintext + space, ciphertext, ticketLen);
     space += ticketLen;
-    // fprintf (log, "After second plaintext setting KEYSIZE: %u\n", KEYSIZE);
-    // fprintf (log, "offset of plaintext: %u\n", space);
-    // fflush(log);
 
     // Now, encrypt Message 2 using Ka. 
     // Use the global scratch buffer ciphertext2[] to collect the results
     size_t final = encrypt(plaintext, LenMsgPlain, Ka->key, Ka->iv, ciphertext2);
     // errors here
     LenMsg2 = final;
-    //LenMsg2 += LENSIZE; // length of message outside encryption
-    // fprintf (log, "After second encrypt LenMsg2: %u\n", LenMsg2);
-    // fflush(log);
+
     // allocate memory on behalf of the caller for a copy of MSG2 ciphertext
-    
     *msg2 = calloc(1, LenMsg2 + LENSIZE);
 
     // Copy the encrypted ciphertext to Caller's msg2 buffer.
-    //memcpy(*msg2, &LenMsg2, LENSIZE);
     memcpy (*msg2, ciphertext2, LenMsg2);
-    // fprintf (log, "Copy cipher\n");
-    // fflush(log);
-    // Plaintext Ticket (69 Bytes) iss
+
 
     fprintf( log , "Plaintext Ticket (%lu Bytes) is\n" ,  LenTktPlain  ) ;
     BIO_dump_indent_fp( log , tempPlaintext ,  LenTktPlain  , 4 ) ;    fprintf( log , "\n" ) ;
@@ -1053,7 +1034,8 @@ void  MSG4_receive( FILE *log , int fd , const myKey_t *Ks , Nonce_t *rcvd_fNa2 
     fprintf(log, "The following Encrypted MSG4 ( %lu bytes ) was received:\n",
             msg4_len);
     BIO_dump_indent_fp(log, ciphertext, msg4_len, 4);
-    fprintf(log, "\n");
+    fprintf(log, "\n\n");
+    
 
     size_t decryptedLen = decrypt(ciphertext, msg4_len, Ks->key, Ks->iv, decryptext);
 
@@ -1062,11 +1044,11 @@ void  MSG4_receive( FILE *log , int fd , const myKey_t *Ks , Nonce_t *rcvd_fNa2 
     fprintf(log, "Amal is expecting back this f( Na2 ) in MSG4:\n");
 
     Nonce_t copy ;
-    memcpy (&copy, Nb, NONCELEN);
+    // memcpy (&copy, Nb, NONCELEN);
 
-    fNonce (&copy, Nb);
+    // fNonce (&copy, Nb);
 
-    BIO_dump_indent_fp(log, copy, NONCELEN, 4);
+    BIO_dump_indent_fp(log, rcvd_fNa2, NONCELEN, 4);
     fprintf(log, "\n");
 
     fprintf(log, "Basim returned the following f( Na2 )   >>>> VALID\n");
@@ -1120,7 +1102,7 @@ size_t  MSG5_new( FILE *log , uint8_t **msg5, const myKey_t *Ks ,  Nonce_t *fNb 
     fprintf( log , "The following Encrypted MSG5 ( %lu bytes ) has been"
                    " created by MSG5_new ():  \n" , LenMSG5cipher ) ;
     BIO_dump_indent_fp( log , *msg5 , LenMSG5cipher , 4 ) ;    fprintf( log , "\n" ) ;    
-    fflush( log ) ;    
+    fflush( log ) ;
 
     return LenMSG5cipher ;
 
