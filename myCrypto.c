@@ -1029,7 +1029,7 @@ void  MSG4_receive( FILE *log , int fd , const myKey_t *Ks , Nonce_t *rcvd_fNa2 
 
     fprintf(log, "Amal is expecting back this f( Na2 ) in MSG4:\n");
 
-    Nonce_t copy ;
+    // Nonce_t copy ;
     // memcpy (&copy, Nb, NONCELEN);
 
     // fNonce (&copy, Nb);
