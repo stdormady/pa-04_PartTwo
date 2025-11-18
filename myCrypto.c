@@ -653,9 +653,8 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     size_t LenA    = strlen(IDa) + 1; 
     size_t LenTktPlain = KEYSIZE + LENSIZE + LenA; // This is good
 
-
-    // is this ok, or should we memcpy into the plaintext buffer, then encrypt?
     // int *TktPlain = calloc(1,LenTktPlain);
+    // pointer arithmetic to build the ticket
     memcpy(plaintext + space, Ks, KEYSIZE);
     space += KEYSIZE;
     memcpy(plaintext + space, &LenA, LENSIZE);
@@ -663,8 +662,10 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     memcpy(plaintext + space, IDa, LenA);
     space += LenA;
 
-    char *ticketCipher = calloc (1, LenTktPlain);
+    // not used, but maybe we should?
+    // char *ticketCipher = calloc (1, LenTktPlain);
 
+    // encrypting the ticket
     LenMsg2 += LenTktPlain;
     size_t ticketLen = encrypt(plaintext, LenTktPlain, Kb->key, Kb->iv, ciphertext);
 
@@ -688,7 +689,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     size_t LenB    = strlen(IDb) + 1; 
     size_t LenMsgPlain = KEYSIZE + LENSIZE + LenB + NONCELEN + LENSIZE + ticketLen;
 
-    LenMsg2 += LenMsgPlain;
+    // pointer arichmetic to build the message
     space = 0;
     memcpy(plaintext + space, Ks, KEYSIZE);
     space += KEYSIZE;
@@ -705,9 +706,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
 
     // Now, encrypt Message 2 using Ka. 
     // Use the global scratch buffer ciphertext2[] to collect the results
-    size_t final = encrypt(plaintext, LenMsgPlain, Ka->key, Ka->iv, ciphertext2);
-    // errors here
-    LenMsg2 = final;
+    LenMsg2 = encrypt(plaintext, LenMsgPlain, Ka->key, Ka->iv, ciphertext2);
 
     // allocate memory on behalf of the caller for a copy of MSG2 ciphertext
     *msg2 = calloc(1, LenMsg2 + LENSIZE);
@@ -715,7 +714,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     // Copy the encrypted ciphertext to Caller's msg2 buffer.
     memcpy (*msg2, ciphertext2, LenMsg2);
 
-
+    // outputting the necessary data to KDC log
     fprintf( log , "Plaintext Ticket (%lu Bytes) is\n" ,  LenTktPlain  ) ;
     BIO_dump_indent_fp( log , tempPlaintext ,  LenTktPlain  , 4 ) ;    fprintf( log , "\n" ) ;
     fflush(log);
@@ -734,7 +733,7 @@ size_t MSG2_new( FILE *log , uint8_t **msg2, const myKey_t *Ka , const myKey_t *
     BIO_dump_indent_fp ( log ,  Na  ,  NONCELEN  , 4 ) ;  fprintf( log , "\n") ; 
 
     fprintf( log ,"    Encrypted Ticket (%lu Bytes) is\n" ,  ticketLen );
-    BIO_dump_indent_fp ( log ,  ciphertext  ,  ticketLen  , 4 ) ;  //fprintf( log , "\n") ; 
+    BIO_dump_indent_fp ( log ,  ciphertext  ,  ticketLen  , 4 ) ;
 
     fflush( log ) ;    
     
@@ -796,6 +795,8 @@ void MSG2_receive( FILE *log , int fd , const myKey_t *Ka , myKey_t *Ks, char **
     BIO_dump_indent_fp(log, *IDb, lenIDb, 4);
     fprintf(log, "\n");
     fflush(log);
+
+    // allocate memory here for IDb?
 
     memcpy(IDb, decryptext + space, lenIDb);
     space += lenIDb;
